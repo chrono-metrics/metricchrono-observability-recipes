@@ -1,0 +1,520 @@
+{
+  "description": "",
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nAgent workflow change compared with normal behavior.\n\nWhy you care:\nAgents can regress by using different tools or step patterns.\n\nHow to read it:\nRising score means workflow changed compared to normal.\n\nWhat to do next:\nInspect agent paths and tool calls.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_agent_workflow_change_score"
+        ],
+        "tableColumns": [],
+        "unitMarking": "percent"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(metricchrono_ai_agent_workflow_change_score{service=\"$service\",environment=\"$environment\",model=\"$model\",comparison=\"normal_baseline\"})",
+          "format": "time_series",
+          "legendFormat": "workflow changed compared to normal",
+          "refId": "A"
+        }
+      ],
+      "title": "Is the agent workflow changing?",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nWorkflow-related change by agent stream.\n\nWhy you care:\nTool-use changes are direct agent observability signals.\n\nHow to read it:\nHigher bars are paths to inspect first.\n\nWhat to do next:\nInspect traces for the highest changed path.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_agent_workflow_change_score"
+        ],
+        "tableColumns": [],
+        "unitMarking": "percent"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(max_over_time(metricchrono_ai_agent_workflow_change_score{service=\"$service\",environment=\"$environment\",model=\"$model\",comparison=\"normal_baseline\"}[$__range]))",
+          "format": "time_series",
+          "instant": true,
+          "legendFormat": "Tool and step pattern",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Are tool-use patterns changing?",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nWorkflow movement beside model-version state.\n\nWhy you care:\nAgent changes often follow prompt, model, or tool updates.\n\nHow to read it:\nA jump after v2 becomes active is update-correlated.\n\nWhat to do next:\nInspect the update and affected traces.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_agent_workflow_change_score",
+          "metricchrono_ai_model_version_active"
+        ],
+        "tableColumns": [],
+        "unitMarking": "none"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (model_version) (metricchrono_ai_model_version_active{service=\"$service\",environment=\"$environment\",model=\"$model\"})",
+          "format": "time_series",
+          "legendFormat": "{{model_version}} active",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(metricchrono_ai_agent_workflow_change_score{service=\"$service\",environment=\"$environment\",model=\"$model\"})",
+          "format": "time_series",
+          "legendFormat": "Workflow change",
+          "refId": "B"
+        }
+      ],
+      "title": "Did behavior change after prompt/model/tool update?",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nAgent rows ranked by workflow movement.\n\nWhy you care:\nThis gives a trace or path to inspect.\n\nHow to read it:\nStart with the highest score.\n\nWhat to do next:\nInspect the matching agent path.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_inspection_candidate"
+        ],
+        "tableColumns": [
+          "stream",
+          "workload",
+          "model_version",
+          "change_score",
+          "next_step"
+        ],
+        "unitMarking": "percent"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "topk(6, max by (stream,workload,model_version,main_change,cause,next_step,drift_state) (max_over_time(metricchrono_ai_inspection_candidate{service=\"$service\",environment=\"$environment\",model=\"$model\",workload=\"agent_workflow\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "agent candidate",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Which agent path changed most?",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nAgent workflow compared with last window and normal behavior.\n\nWhy you care:\nThis separates regression-like jumps from slow behavior movement.\n\nHow to read it:\nSudden change spikes; drift from normal accumulates.\n\nWhat to do next:\nUse the shape to decide update rollback or monitoring.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_agent_workflow_change_score"
+        ],
+        "tableColumns": [],
+        "unitMarking": "percent"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(metricchrono_ai_agent_workflow_change_score{service=\"$service\",environment=\"$environment\",model=\"$model\",comparison=\"last_window\"})",
+          "format": "time_series",
+          "legendFormat": "Sudden workflow change",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(metricchrono_ai_agent_workflow_change_score{service=\"$service\",environment=\"$environment\",model=\"$model\",comparison=\"normal_baseline\"})",
+          "format": "time_series",
+          "legendFormat": "Workflow drift from normal",
+          "refId": "B"
+        }
+      ],
+      "title": "Is this a sudden jump or gradual drift?",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nCurrent agent workflow state.\n\nWhy you care:\nAgent operators need a simple summary.\n\nHow to read it:\n0 is Normal, 1 is Watch, 2 is Drift, and 3 is Incident.\n\nWhat to do next:\nIf elevated, inspect the top changed agent path.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 6,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_drift_state"
+        ],
+        "tableColumns": [],
+        "unitMarking": "none"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(metricchrono_ai_drift_state{service=\"$service\",environment=\"$environment\",model=\"$model\",workload=\"agent_workflow\"})",
+          "format": "time_series",
+          "instant": true,
+          "legendFormat": "Agent status",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Current agent status?",
+      "type": "stat"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": [
+    "ai-observability",
+    "mlops",
+    "metricchrono",
+    "recipe"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 0,
+        "name": "datasource",
+        "query": "prometheus",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "checkout-ai",
+          "value": "checkout-ai"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "service",
+        "query": "label_values(metricchrono_ai_behavior_change_score, service)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "local",
+          "value": "local"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "environment",
+        "query": "label_values(metricchrono_ai_behavior_change_score, environment)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "recommendation-ranker",
+          "value": "recommendation-ranker"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "model",
+        "query": "label_values(metricchrono_ai_behavior_change_score, model)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "v2",
+          "value": "v2"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "model_version",
+        "query": "label_values(metricchrono_ai_behavior_change_score, model_version)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "model_service",
+          "value": "model_service"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "workload",
+        "query": "label_values(metricchrono_ai_behavior_change_score, workload)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "overall.behavior",
+          "value": "overall.behavior"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "stream",
+        "query": "label_values(metricchrono_ai_behavior_change_score, stream)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "normal_baseline",
+          "value": "normal_baseline"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "comparison",
+        "query": "label_values(metricchrono_ai_behavior_change_score, comparison)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "allValue": "small|medium|large",
+        "current": {
+          "text": "small|medium|large",
+          "value": "small|medium|large"
+        },
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "change_size",
+        "query": "small,medium,large",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "30s",
+          "value": "30s"
+        },
+        "hide": 0,
+        "name": "window",
+        "query": "30s,1m,2m,5m",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Agent Workflow Drift",
+  "uid": "agent-workflow-drift",
+  "version": 1
+}

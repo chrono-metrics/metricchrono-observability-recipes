@@ -1,0 +1,559 @@
+{
+  "advanced_metrics": [
+    "metricchrono_boundary_crossings_total",
+    "metricchrono_distance",
+    "metricchrono_internal_golden_vector_ok",
+    "metricchrono_ladder_delta",
+    "metricchrono_ladder_epsilon",
+    "metricchrono_ladder_epsilon_ref",
+    "metricchrono_ladder_p",
+    "metricchrono_tick_value",
+    "metricchrono_tier_active"
+  ],
+  "assertions": [
+    {
+      "evidence": "request rate and latency are stable in the synthetic scenario",
+      "name": "Service health stays normal while behavior changes",
+      "passed": true
+    },
+    {
+      "evidence": "max Normal behavior change = 0.0",
+      "name": "Normal phase has low behavior change",
+      "passed": true
+    },
+    {
+      "evidence": "max large score during Small Input Noise = 0.0",
+      "name": "Small Input Noise does not create large movement",
+      "passed": true
+    },
+    {
+      "evidence": "input score 0.0 -> 100.0",
+      "name": "Gradual Data Drift increases input change",
+      "passed": true
+    },
+    {
+      "evidence": "max Model Change behavior score = 91.7",
+      "name": "Model Change creates the largest behavior jump",
+      "passed": true
+    },
+    {
+      "evidence": "final Recovery behavior score = 0.0",
+      "name": "Recovery lowers behavior change",
+      "passed": true
+    },
+    {
+      "evidence": "behavior score rises during Gradual Data Drift while quality remains delayed",
+      "name": "Behavior signal is visible before quality proxy fully drops",
+      "passed": true
+    }
+  ],
+  "change_sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "comparisons": [
+    "normal_baseline",
+    "last_window",
+    "previous_model_version"
+  ],
+  "dashboards": [
+    {
+      "default": true,
+      "file": "grafana/dashboards/ai-behavior-overview.json",
+      "panel_count": 8,
+      "title": "AI Behavior Overview",
+      "types": [
+        "timeseries",
+        "timeseries",
+        "timeseries",
+        "timeseries",
+        "state-timeline",
+        "table",
+        "timeseries",
+        "stat"
+      ]
+    },
+    {
+      "default": true,
+      "file": "grafana/dashboards/drift-investigation.json",
+      "panel_count": 8,
+      "title": "Drift Investigation",
+      "types": [
+        "timeseries",
+        "barchart",
+        "histogram",
+        "state-timeline",
+        "barchart",
+        "table",
+        "gauge",
+        "bargauge"
+      ]
+    },
+    {
+      "default": false,
+      "file": "grafana/dashboards/rag-retrieval-drift.json",
+      "panel_count": 6,
+      "title": "RAG Retrieval Drift",
+      "types": [
+        "timeseries",
+        "timeseries",
+        "state-timeline",
+        "table",
+        "timeseries",
+        "stat"
+      ]
+    },
+    {
+      "default": false,
+      "file": "grafana/dashboards/agent-workflow-drift.json",
+      "panel_count": 6,
+      "title": "Agent Workflow Drift",
+      "types": [
+        "timeseries",
+        "barchart",
+        "state-timeline",
+        "table",
+        "timeseries",
+        "stat"
+      ]
+    },
+    {
+      "default": false,
+      "file": "grafana/dashboards/source-agreement.json",
+      "panel_count": 6,
+      "title": "Source Agreement",
+      "types": [
+        "timeseries",
+        "table",
+        "bargauge",
+        "state-timeline",
+        "timeseries",
+        "stat"
+      ]
+    },
+    {
+      "default": false,
+      "file": "grafana/dashboards/metricchrono-internals.json",
+      "panel_count": 6,
+      "title": "Advanced: MetricChrono Internals",
+      "types": [
+        "timeseries",
+        "state-timeline",
+        "table",
+        "histogram",
+        "timeseries",
+        "stat"
+      ]
+    }
+  ],
+  "default_dashboard_count": 2,
+  "default_panel_count": 16,
+  "emitted_metrics": [
+    "metricchrono_ai_agent_workflow_change_score",
+    "metricchrono_ai_baseline_age_seconds",
+    "metricchrono_ai_behavior_change_score",
+    "metricchrono_ai_behavior_distance",
+    "metricchrono_ai_change_events_total",
+    "metricchrono_ai_change_score_by_size",
+    "metricchrono_ai_drift_state",
+    "metricchrono_ai_embedding_change_score",
+    "metricchrono_ai_errors_total",
+    "metricchrono_ai_input_change_score",
+    "metricchrono_ai_inspection_candidate",
+    "metricchrono_ai_model_version_active",
+    "metricchrono_ai_output_change_score",
+    "metricchrono_ai_quality_proxy",
+    "metricchrono_ai_request_duration_seconds",
+    "metricchrono_ai_requests_total",
+    "metricchrono_ai_retrieval_change_score",
+    "metricchrono_ai_scenario_state",
+    "metricchrono_ai_source_disagreement_score",
+    "metricchrono_ai_source_missing_total",
+    "metricchrono_boundary_crossings_total",
+    "metricchrono_distance",
+    "metricchrono_internal_golden_vector_ok",
+    "metricchrono_ladder_delta",
+    "metricchrono_ladder_epsilon",
+    "metricchrono_ladder_epsilon_ref",
+    "metricchrono_ladder_p",
+    "metricchrono_tick_value",
+    "metricchrono_tier_active"
+  ],
+  "entry_forbidden_words": [
+    "epsilon",
+    "delta",
+    "p",
+    "tick",
+    "tier",
+    "ladder",
+    "staircase",
+    "comparator",
+    "activation gate",
+    "MetricChrono vector",
+    "consensus field",
+    "boundary crossing"
+  ],
+  "forbidden_labels": [
+    "document_id",
+    "email",
+    "prompt",
+    "raw_query",
+    "raw_text",
+    "request_id",
+    "session_id",
+    "span_id",
+    "trace_id",
+    "user_id"
+  ],
+  "label_names_by_metric": {
+    "metricchrono_ai_agent_workflow_change_score": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_baseline_age_seconds": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_behavior_change_score": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_behavior_distance": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_change_events_total": [
+      "change_size",
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_change_score_by_size": [
+      "change_size",
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_drift_state": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_embedding_change_score": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_errors_total": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_input_change_score": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_inspection_candidate": [
+      "cause",
+      "comparison",
+      "drift_state",
+      "environment",
+      "main_change",
+      "model",
+      "model_version",
+      "next_step",
+      "rank",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_model_version_active": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_output_change_score": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_quality_proxy": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_request_duration_seconds": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_requests_total": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_retrieval_change_score": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_scenario_state": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "phase",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_source_disagreement_score": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ai_source_missing_total": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_boundary_crossings_total": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "tier",
+      "workload"
+    ],
+    "metricchrono_distance": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "tier",
+      "workload"
+    ],
+    "metricchrono_internal_golden_vector_ok": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "workload"
+    ],
+    "metricchrono_ladder_delta": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "tier",
+      "workload"
+    ],
+    "metricchrono_ladder_epsilon": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "tier",
+      "workload"
+    ],
+    "metricchrono_ladder_epsilon_ref": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "tier",
+      "workload"
+    ],
+    "metricchrono_ladder_p": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "tier",
+      "workload"
+    ],
+    "metricchrono_tick_value": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "tier",
+      "workload"
+    ],
+    "metricchrono_tier_active": [
+      "comparison",
+      "environment",
+      "model",
+      "model_version",
+      "service",
+      "stream",
+      "tier",
+      "workload"
+    ]
+  },
+  "metric_types": {
+    "metricchrono_ai_agent_workflow_change_score": "gauge",
+    "metricchrono_ai_baseline_age_seconds": "gauge",
+    "metricchrono_ai_behavior_change_score": "gauge",
+    "metricchrono_ai_behavior_distance": "histogram",
+    "metricchrono_ai_change_events_total": "counter",
+    "metricchrono_ai_change_score_by_size": "gauge",
+    "metricchrono_ai_drift_state": "gauge",
+    "metricchrono_ai_embedding_change_score": "gauge",
+    "metricchrono_ai_errors_total": "counter",
+    "metricchrono_ai_input_change_score": "gauge",
+    "metricchrono_ai_inspection_candidate": "gauge",
+    "metricchrono_ai_model_version_active": "gauge",
+    "metricchrono_ai_output_change_score": "gauge",
+    "metricchrono_ai_quality_proxy": "gauge",
+    "metricchrono_ai_request_duration_seconds": "histogram",
+    "metricchrono_ai_requests_total": "counter",
+    "metricchrono_ai_retrieval_change_score": "gauge",
+    "metricchrono_ai_scenario_state": "gauge",
+    "metricchrono_ai_source_disagreement_score": "gauge",
+    "metricchrono_ai_source_missing_total": "counter",
+    "metricchrono_boundary_crossings_total": "counter",
+    "metricchrono_distance": "histogram",
+    "metricchrono_internal_golden_vector_ok": "gauge",
+    "metricchrono_ladder_delta": "gauge",
+    "metricchrono_ladder_epsilon": "gauge",
+    "metricchrono_ladder_epsilon_ref": "gauge",
+    "metricchrono_ladder_p": "gauge",
+    "metricchrono_tick_value": "gauge",
+    "metricchrono_tier_active": "gauge"
+  },
+  "panel_total": 40,
+  "panel_type_counts": {
+    "barchart": 3,
+    "bargauge": 2,
+    "gauge": 1,
+    "histogram": 2,
+    "stat": 5,
+    "state-timeline": 6,
+    "table": 6,
+    "timeseries": 15
+  },
+  "phase_names": [
+    "Normal",
+    "Small Input Noise",
+    "Gradual Data Drift",
+    "Model Change",
+    "Recovery"
+  ],
+  "required_metrics": [
+    "metricchrono_ai_agent_workflow_change_score",
+    "metricchrono_ai_baseline_age_seconds",
+    "metricchrono_ai_behavior_change_score",
+    "metricchrono_ai_behavior_distance",
+    "metricchrono_ai_change_events_total",
+    "metricchrono_ai_change_score_by_size",
+    "metricchrono_ai_drift_state",
+    "metricchrono_ai_embedding_change_score",
+    "metricchrono_ai_errors_total",
+    "metricchrono_ai_input_change_score",
+    "metricchrono_ai_inspection_candidate",
+    "metricchrono_ai_model_version_active",
+    "metricchrono_ai_output_change_score",
+    "metricchrono_ai_quality_proxy",
+    "metricchrono_ai_request_duration_seconds",
+    "metricchrono_ai_requests_total",
+    "metricchrono_ai_retrieval_change_score",
+    "metricchrono_ai_scenario_state",
+    "metricchrono_ai_source_disagreement_score",
+    "metricchrono_ai_source_missing_total"
+  ]
+}

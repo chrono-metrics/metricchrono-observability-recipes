@@ -1,0 +1,80 @@
+groups:
+  - name: ai-behavior-recipe-examples
+    rules:
+      - alert: BehaviorDriftWatch
+        expr: |
+          max by (service, environment, model, stream) (
+            metricchrono_ai_behavior_change_score{comparison="normal_baseline",stream="overall.behavior"}
+          ) > 35
+        for: 20s
+        labels:
+          severity: watch
+          recipe: metricchrono-ai-behavior
+        annotations:
+          summary: Behavior drift watch
+          description: The model is behaving differently from normal, but not necessarily broken.
+          runbook_url: docs/alert-tuning.md#behavior-drift-watch
+
+      - alert: PossibleAIBehaviorIncident
+        expr: |
+          max by (service, environment, model, stream) (
+            metricchrono_ai_behavior_change_score{comparison="normal_baseline",stream="overall.behavior"}
+          ) > 75
+          and on (service, environment, model, stream)
+          max by (service, environment, model, stream) (
+            metricchrono_ai_change_score_by_size{change_size="large",stream="overall.behavior"}
+          ) > 25
+        for: 10s
+        labels:
+          severity: incident
+          recipe: metricchrono-ai-behavior
+        annotations:
+          summary: Possible AI behavior incident
+          description: Large behavior change is sustained or correlated with degraded quality.
+          runbook_url: docs/alert-tuning.md#possible-ai-behavior-incident
+
+      - alert: BehaviorChangedAfterDeploy
+        expr: |
+          max by (service, environment, model) (
+            metricchrono_ai_behavior_change_score{comparison="previous_model_version",stream="overall.behavior"}
+          ) > 10
+          and on (service, environment, model)
+          max by (service, environment, model) (
+            metricchrono_ai_model_version_active{model_version="v2"}
+          ) == 1
+        for: 10s
+        labels:
+          severity: watch
+          recipe: metricchrono-ai-behavior
+        annotations:
+          summary: Behavior changed after deploy
+          description: Behavior changed shortly after a model, prompt, index, or config update.
+          runbook_url: docs/alert-tuning.md#behavior-changed-after-deploy
+
+      - alert: RetrievalBehaviorDrift
+        expr: |
+          max by (service, environment, model, stream) (
+            metricchrono_ai_retrieval_change_score{comparison="normal_baseline"}
+          ) > 45
+        for: 10s
+        labels:
+          severity: watch
+          recipe: metricchrono-ai-behavior
+        annotations:
+          summary: Retrieval behavior drift
+          description: RAG is retrieving different context than normal.
+          runbook_url: docs/alert-tuning.md#retrieval-behavior-drift
+
+      - alert: AgentWorkflowChanged
+        expr: |
+          max by (service, environment, model, stream) (
+            metricchrono_ai_agent_workflow_change_score{comparison="normal_baseline"}
+          ) > 20
+        for: 10s
+        labels:
+          severity: watch
+          recipe: metricchrono-ai-behavior
+        annotations:
+          summary: Agent workflow changed
+          description: Agent tool or step behavior changed from normal.
+          runbook_url: docs/alert-tuning.md#agent-workflow-changed

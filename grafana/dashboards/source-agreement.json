@@ -1,0 +1,498 @@
+{
+  "description": "",
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nOverall source disagreement score.\n\nWhy you care:\nMulti-source systems need to know when one source diverges from the others.\n\nHow to read it:\nRising lines show disagreement by source.\n\nWhat to do next:\nInspect the highest source in the table.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_source_disagreement_score"
+        ],
+        "tableColumns": [],
+        "unitMarking": "percent"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (stream) (metricchrono_ai_source_disagreement_score{service=\"$service\",environment=\"$environment\",model=\"$model\",workload=\"source_agreement\"})",
+          "format": "time_series",
+          "legendFormat": "{{stream}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Are sources disagreeing?",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nSources ranked by disagreement.\n\nWhy you care:\nThis identifies the outlier source.\n\nHow to read it:\nThe highest row is the first source to inspect.\n\nWhat to do next:\nInspect that source before changing policy.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_source_disagreement_score"
+        ],
+        "tableColumns": [
+          "stream",
+          "model_version",
+          "source_disagreement_score",
+          "next_step"
+        ],
+        "unitMarking": "percent"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "topk(6, max by (stream,model_version) (max_over_time(metricchrono_ai_source_disagreement_score{service=\"$service\",environment=\"$environment\",model=\"$model\",workload=\"source_agreement\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "source",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Which source disagrees most?",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nSource disagreement split into small, medium, and large movement.\n\nWhy you care:\nThis separates minor source noise from serious disagreement.\n\nHow to read it:\nLarge movement means a source is materially different.\n\nWhat to do next:\nInspect the source with large movement.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_change_score_by_size"
+        ],
+        "tableColumns": [],
+        "unitMarking": "percent"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (change_size) (max_over_time(metricchrono_ai_change_score_by_size{service=\"$service\",environment=\"$environment\",model=\"$model\",workload=\"source_agreement\",change_size=~\"$change_size\"}[$__range]))",
+          "format": "time_series",
+          "instant": true,
+          "legendFormat": "{{change_size}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Is disagreement small or serious?",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nSource disagreement state over time.\n\nWhy you care:\nBounded disagreement is different from ongoing disagreement.\n\nHow to read it:\nWatch, Drift, or Incident state shows when disagreement was active.\n\nWhat to do next:\nInspect source logs for that period.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_drift_state"
+        ],
+        "tableColumns": [],
+        "unitMarking": "none"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (stream) (metricchrono_ai_drift_state{service=\"$service\",environment=\"$environment\",model=\"$model\",workload=\"source_agreement\"})",
+          "format": "time_series",
+          "legendFormat": "{{stream}} state",
+          "refId": "A"
+        }
+      ],
+      "title": "When did disagreement start?",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nMissing-source event rate.\n\nWhy you care:\nMissing sources can explain disagreement or weak decisions.\n\nHow to read it:\nA nonzero line means one source was absent in the demo.\n\nWhat to do next:\nInspect source availability before changing models.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_source_missing_total"
+        ],
+        "tableColumns": [],
+        "unitMarking": "ops"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (stream) (rate(metricchrono_ai_source_missing_total{service=\"$service\",environment=\"$environment\",model=\"$model\",workload=\"source_agreement\"}[$window]))",
+          "format": "time_series",
+          "legendFormat": "{{stream}} missing",
+          "refId": "A"
+        }
+      ],
+      "title": "Is one source missing?",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nCurrent source agreement state.\n\nWhy you care:\nThis gives a simple source health summary.\n\nHow to read it:\n0 is Normal, 1 is Watch, 2 is Drift, and 3 is Incident.\n\nWhat to do next:\nIf elevated, inspect the highest-disagreement source.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 6,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ai_drift_state"
+        ],
+        "tableColumns": [],
+        "unitMarking": "none"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(metricchrono_ai_drift_state{service=\"$service\",environment=\"$environment\",model=\"$model\",workload=\"source_agreement\"})",
+          "format": "time_series",
+          "instant": true,
+          "legendFormat": "Source status",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Current source status?",
+      "type": "stat"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": [
+    "ai-observability",
+    "mlops",
+    "metricchrono",
+    "recipe"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 0,
+        "name": "datasource",
+        "query": "prometheus",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "checkout-ai",
+          "value": "checkout-ai"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "service",
+        "query": "label_values(metricchrono_ai_behavior_change_score, service)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "local",
+          "value": "local"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "environment",
+        "query": "label_values(metricchrono_ai_behavior_change_score, environment)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "recommendation-ranker",
+          "value": "recommendation-ranker"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "model",
+        "query": "label_values(metricchrono_ai_behavior_change_score, model)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "v2",
+          "value": "v2"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "model_version",
+        "query": "label_values(metricchrono_ai_behavior_change_score, model_version)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "model_service",
+          "value": "model_service"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "workload",
+        "query": "label_values(metricchrono_ai_behavior_change_score, workload)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "overall.behavior",
+          "value": "overall.behavior"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "stream",
+        "query": "label_values(metricchrono_ai_behavior_change_score, stream)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "normal_baseline",
+          "value": "normal_baseline"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "comparison",
+        "query": "label_values(metricchrono_ai_behavior_change_score, comparison)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "allValue": "small|medium|large",
+        "current": {
+          "text": "small|medium|large",
+          "value": "small|medium|large"
+        },
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "change_size",
+        "query": "small,medium,large",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "30s",
+          "value": "30s"
+        },
+        "hide": 0,
+        "name": "window",
+        "query": "30s,1m,2m,5m",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Source Agreement",
+  "uid": "source-agreement",
+  "version": 1
+}

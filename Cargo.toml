@@ -1,0 +1,9 @@
+[package]
+name = "metricchrono-observability-recipes"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+metricchrono-core = "0.1"
+metricchrono-consensus = "0.1"

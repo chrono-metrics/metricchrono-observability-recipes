@@ -1,0 +1,24 @@
+# Validation Checklist
+
+- [x] The first dashboard has no MetricChrono jargon.
+- [x] The first dashboard has no more than 8 panels.
+- [x] The second dashboard has no more than 8 panels.
+- [x] Every panel title is phrased as an MLOps question.
+- [x] Every panel has What this shows / Why you care / How to read it / What to do next.
+- [x] The default demo shows healthy infra with changing AI behavior.
+- [x] The default demo shows Normal, Small Input Noise, Gradual Data Drift, Model Change, and Recovery.
+- [x] The user can distinguish small noise from major behavior shift.
+- [x] The user can see whether inputs or outputs changed.
+- [x] The user can see whether change started after a deploy.
+- [x] The user can identify which stream/version to inspect first.
+- [x] RAG, agent, and source-agreement dashboards are optional, not forced into the entry path.
+- [x] Raw epsilon/delta/p/tick/tier/ladder views are advanced-only.
+- [x] Alert examples use MLOps language.
+- [x] The README explains the value before explaining MetricChrono.
+- [x] A newcomer can understand the first screenshot without reading the paper.
+- [x] The recipe includes a concrete MLOps adapter for real service events.
+- [x] The synthetic scenario stores raw event surfaces as well as derived scores.
+- [x] Baseline and calibration guidance explains how to tune thresholds.
+- [x] Alert examples are scoped and short enough to fire in the local demo.
+- [x] The README presents Docker Compose as the primary first-run path.
+- [x] CI validates dashboards, metrics, adapter behavior, Prometheus rules, Rust, and JavaScript examples.

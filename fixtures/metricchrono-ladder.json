@@ -1,0 +1,47 @@
+{
+  "tiers": [
+    {
+      "tier": "0",
+      "epsilon": 0.03,
+      "delta": 0.05,
+      "p": 0.5,
+      "epsilon_ref": 1.0
+    },
+    {
+      "tier": "1",
+      "epsilon": 0.08,
+      "delta": 0.12,
+      "p": 0.5,
+      "epsilon_ref": 1.0
+    },
+    {
+      "tier": "2",
+      "epsilon": 0.18,
+      "delta": 0.27,
+      "p": 0.5,
+      "epsilon_ref": 1.0
+    },
+    {
+      "tier": "3",
+      "epsilon": 0.35,
+      "delta": 0.55,
+      "p": 0.5,
+      "epsilon_ref": 1.0
+    },
+    {
+      "tier": "4",
+      "epsilon": 0.7,
+      "delta": 1.05,
+      "p": 0.5,
+      "epsilon_ref": 1.0
+    },
+    {
+      "tier": "5",
+      "epsilon": 1.2,
+      "delta": 1.8,
+      "p": 0.5,
+      "epsilon_ref": 1.0
+    }
+  ],
+  "advanced_only": true
+}

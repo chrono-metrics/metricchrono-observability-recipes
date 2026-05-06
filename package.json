@@ -1,0 +1,17 @@
+{
+  "name": "metricchrono-observability-recipes",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "metricchrono:js": "node examples/js/metricchrono-smoke.mjs",
+    "test:adapter": "python3 scripts/smoke_mlops_adapter.py && python3 scripts/smoke_alert_windows.py && python3 -m unittest discover -s tests",
+    "validate": "python3 scripts/validate_recipe.py && npm run test:adapter"
+  },
+  "dependencies": {
+    "@metricchrono/core": "0.1.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.59.1"
+  }
+}

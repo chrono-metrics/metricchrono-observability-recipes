@@ -1,0 +1,530 @@
+{
+  "description": "This dashboard is for maintainers and researchers. You do not need it to use the MLOps recipe.",
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nRaw tick values from the MetricChrono engine.\n\nWhy you care:\nThis dashboard is for maintainers and researchers. You do not need it to use the MLOps recipe.\n\nHow to read it:\nUse this only when debugging implementation details.\n\nWhat to do next:\nReturn to the default dashboards for user-facing triage.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_tick_value"
+        ],
+        "tableColumns": [],
+        "unitMarking": "short"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (tier) (metricchrono_tick_value{service=\"$service\",environment=\"$environment\",model=\"$model\"})",
+          "format": "time_series",
+          "legendFormat": "tier {{tier}}",
+          "refId": "A"
+        }
+      ],
+      "title": "What raw tick values are being produced?",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nRaw tier activity from the MetricChrono engine.\n\nWhy you care:\nThis dashboard is for maintainers and researchers. You do not need it to use the MLOps recipe.\n\nHow to read it:\nActive raw tiers help maintainers verify scale behavior.\n\nWhat to do next:\nUse only for engine debugging.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_tier_active"
+        ],
+        "tableColumns": [],
+        "unitMarking": "none"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (tier) (metricchrono_tier_active{service=\"$service\",environment=\"$environment\",model=\"$model\"})",
+          "format": "time_series",
+          "legendFormat": "tier {{tier}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Which raw tiers are active?",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nRaw epsilon, delta, p, and epsilon_ref values.\n\nWhy you care:\nThis dashboard is for maintainers and researchers. You do not need it to use the MLOps recipe.\n\nHow to read it:\nThese are implementation parameters, not MLOps triage concepts.\n\nWhat to do next:\nChange only in controlled fixture updates.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_ladder_delta",
+          "metricchrono_ladder_epsilon",
+          "metricchrono_ladder_epsilon_ref",
+          "metricchrono_ladder_p"
+        ],
+        "tableColumns": [],
+        "unitMarking": "none"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "metricchrono_ladder_epsilon{service=\"$service\",environment=\"$environment\",model=\"$model\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "epsilon {{tier}}",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "metricchrono_ladder_delta{service=\"$service\",environment=\"$environment\",model=\"$model\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "delta {{tier}}",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "metricchrono_ladder_p{service=\"$service\",environment=\"$environment\",model=\"$model\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "p {{tier}}",
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "metricchrono_ladder_epsilon_ref{service=\"$service\",environment=\"$environment\",model=\"$model\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "epsilon_ref {{tier}}",
+          "range": false,
+          "refId": "D"
+        }
+      ],
+      "title": "What ladder parameters are configured?",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nRaw behavior distance distribution before user-facing normalization.\n\nWhy you care:\nThis dashboard is for maintainers and researchers. You do not need it to use the MLOps recipe.\n\nHow to read it:\nThis helps maintainers compare fixture output to expected vectors.\n\nWhat to do next:\nUse the default histogram for MLOps investigation.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_distance"
+        ],
+        "tableColumns": [],
+        "unitMarking": "none"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (le) (rate(metricchrono_distance_bucket{service=\"$service\",environment=\"$environment\",model=\"$model\"}[$window]))",
+          "format": "time_series",
+          "legendFormat": "raw distance",
+          "refId": "A"
+        }
+      ],
+      "title": "What raw distance distribution is measured?",
+      "type": "histogram"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nRaw boundary crossing pressure.\n\nWhy you care:\nThis dashboard is for maintainers and researchers. You do not need it to use the MLOps recipe.\n\nHow to read it:\nThis can reveal sensitivity edge cases.\n\nWhat to do next:\nKeep this out of first-run user workflows.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_boundary_crossings_total"
+        ],
+        "tableColumns": [],
+        "unitMarking": "ops"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (tier) (rate(metricchrono_boundary_crossings_total{service=\"$service\",environment=\"$environment\",model=\"$model\"}[$window]))",
+          "format": "time_series",
+          "legendFormat": "boundary crossing {{tier}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Where are threshold edge cases?",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "What this shows:\nDeterministic public API smoke-check result.\n\nWhy you care:\nThis dashboard is for maintainers and researchers. You do not need it to use the MLOps recipe.\n\nHow to read it:\nA value of 1 means the fixture sanity check is passing.\n\nWhat to do next:\nIf this fails, inspect the public MetricChrono package examples.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 16,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 6,
+      "mcRecipe": {
+        "expectedMetrics": [
+          "metricchrono_internal_golden_vector_ok"
+        ],
+        "tableColumns": [],
+        "unitMarking": "none"
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(metricchrono_internal_golden_vector_ok{service=\"$service\",environment=\"$environment\",model=\"$model\"})",
+          "format": "time_series",
+          "instant": true,
+          "legendFormat": "Golden check",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Do golden-vector checks pass?",
+      "type": "stat"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": [
+    "ai-observability",
+    "mlops",
+    "metricchrono",
+    "recipe"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 0,
+        "name": "datasource",
+        "query": "prometheus",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "checkout-ai",
+          "value": "checkout-ai"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "service",
+        "query": "label_values(metricchrono_ai_behavior_change_score, service)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "local",
+          "value": "local"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "environment",
+        "query": "label_values(metricchrono_ai_behavior_change_score, environment)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "recommendation-ranker",
+          "value": "recommendation-ranker"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "model",
+        "query": "label_values(metricchrono_ai_behavior_change_score, model)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "v2",
+          "value": "v2"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "model_version",
+        "query": "label_values(metricchrono_ai_behavior_change_score, model_version)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "model_service",
+          "value": "model_service"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "workload",
+        "query": "label_values(metricchrono_ai_behavior_change_score, workload)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "overall.behavior",
+          "value": "overall.behavior"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "stream",
+        "query": "label_values(metricchrono_ai_behavior_change_score, stream)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "normal_baseline",
+          "value": "normal_baseline"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "hide": 0,
+        "name": "comparison",
+        "query": "label_values(metricchrono_ai_behavior_change_score, comparison)",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "allValue": "small|medium|large",
+        "current": {
+          "text": "small|medium|large",
+          "value": "small|medium|large"
+        },
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "change_size",
+        "query": "small,medium,large",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "30s",
+          "value": "30s"
+        },
+        "hide": 0,
+        "name": "window",
+        "query": "30s,1m,2m,5m",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Advanced: MetricChrono Internals",
+  "uid": "metricchrono-internals",
+  "version": 1
+}

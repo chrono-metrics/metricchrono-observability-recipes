@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Prometheus tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y prometheus
+      - name: Install Node dependencies
+        run: npm ci
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements.txt
+      - name: Validate generated recipe
+        run: python3 scripts/validate_recipe.py
+      - name: Test adapter
+        run: |
+          python3 scripts/smoke_mlops_adapter.py
+          python3 scripts/smoke_alert_windows.py
+          python3 -m unittest discover -s tests
+      - name: Check Prometheus config and rules
+        run: |
+          promtool check config prometheus/prometheus.yml
+          promtool check rules rules/metricchrono_recipe_alerts.yml
+      - name: Check Rust example
+        run: cargo check
+      - name: Check Python package smoke
+        run: python3 examples/python/metricchrono_smoke.py
+      - name: Check JavaScript package smoke
+        run: npm run metricchrono:js
