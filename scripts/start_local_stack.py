@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Start the recipe stack on stable localhost ports without Docker."""
+"""Start the MLOps recipe stack on stable localhost ports without Docker."""
 
 from __future__ import annotations
 
@@ -111,6 +111,7 @@ def main() -> int:
                     "grafana": f"http://localhost:{PORTS['grafana']}",
                     "prometheus": f"http://localhost:{PORTS['prometheus']}",
                     "metrics": f"http://localhost:{PORTS['metrics']}/metrics",
+                    "folder": "MetricChrono MLOps Recipes",
                     "dashboards": dashboards,
                 },
                 indent=2,
@@ -124,6 +125,7 @@ def main() -> int:
         raise
 
     print(f"Grafana: http://localhost:{PORTS['grafana']}")
+    print("Grafana folder: MetricChrono MLOps Recipes")
     print(f"Prometheus: http://localhost:{PORTS['prometheus']}")
     print(f"Metrics endpoint: http://localhost:{PORTS['metrics']}/metrics")
     print(f"Runtime files: {RUNTIME}")

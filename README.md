@@ -1,124 +1,71 @@
-# MetricChrono MLOps / AI Observability Recipes
+# MetricChrono Observability Recipes
 
-This recipe shows how to monitor AI behavior drift before labels arrive.
+This repository contains publishable MetricChrono recipe packs. Each recipe lives under `recipes/<slug>/` with its own dashboards, docs, fixtures, examples, rules, and screenshots.
 
-You will run a local model-service scenario where traffic, latency, and errors stay normal while the model's behavior changes. The dashboards show whether the change came from inputs, outputs, retrieval, agent workflow, or a deploy.
+## Recipe Packs
 
-The default local run plays the two-minute scenario once and then holds recovery. Restart the stack to replay it, or run `scripts/serve_metrics.py --loop` when you explicitly want a looping demo.
+- [MLOps / AI Observability](recipes/mlops/README.md)
+- [Robotics Telemetry](recipes/robotics-telemetry/README.md)
+- [Industrial Telemetry](recipes/industrial-telemetry/README.md)
 
-![AI Behavior Overview](screenshots/ai-behavior-overview.png)
+Planned recipe families are reserved under `recipes/sre-ai-services/` and `recipes/agent-observability/`.
 
-## Plug MetricChrono Into Your Service
+## Local Grafana Servers
 
-The adapter in `examples/python/metricchrono_mlops_adapter.py` shows the intended integration shape. Copy it into your service, then:
+The local demo uses independently runnable recipe servers. Shared Grafana/Prometheus plumbing is used where it helps, but robotics and industrial remain separate recipe packs with separate dashboards, docs, screenshots, alerts, examples, fixtures, and language.
 
-```python
-from metricchrono_mlops_adapter import (
-    BehaviorMonitor,
-    MLBehaviorEvent,
-    emit_prometheus_metrics,
-)
+| Recipe pack | Make command | npm equivalent | Default Grafana URL | Grafana folder |
+| --- | --- | --- | --- | --- |
+| MLOps / AI observability | `make mlops` | `npm run mlops:start` | `http://localhost:3000` | `MetricChrono MLOps Recipes` |
+| Robotics telemetry | `make robotics` | `npm run robotics:start` | `http://localhost:3001` | `MetricChrono Robotics Recipes` |
+| Industrial telemetry | `make industrial` | `npm run industrial:start` | `http://localhost:3001` | `MetricChrono Industrial Recipes` |
+| Robotics + industrial together | `make telemetry` | `npm run telemetry:start` | `http://localhost:3001` | `MetricChrono Robotics / Industrial Recipes` |
 
-def build_monitor(baseline_events: list[MLBehaviorEvent]) -> BehaviorMonitor:
-    return BehaviorMonitor.from_baseline_events(baseline_events)
+The telemetry-family commands pick the next free Grafana port if `3001` is occupied. Starting `robotics`, `industrial`, or `telemetry` replaces the previous telemetry-family local stack while leaving the MLOps stack alone. Each start command prints the actual Grafana, Prometheus, metrics, folder, and dashboard URLs.
 
+Stop local servers:
 
-def observe_model_request(
-    monitor: BehaviorMonitor,
-    *,
-    service: str,
-    environment: str,
-    model: str,
-    model_version: str,
-    latency_seconds: float,
-    error: bool,
-    input_features: dict[str, float],
-    embedding: list[float],
-    output_distribution: dict[str, float],
-    baseline_age_seconds: float,
-    retrieved_ids: list[str] | None = None,
-    agent_steps: list[str] | None = None,
-    source_scores: dict[str, float] | None = None,
-    quality_proxy: float = 100.0,
-    previous_model_scores: dict[str, float] | None = None,
-) -> str:
-    snapshot = monitor.observe(MLBehaviorEvent(
-        service=service,
-        environment=environment,
-        model=model,
-        model_version=model_version,
-        phase="live",
-        latency_seconds=latency_seconds,
-        error=error,
-        input_features=input_features,
-        embedding=embedding,
-        output_distribution=output_distribution,
-        retrieved_ids=retrieved_ids or [],
-        agent_steps=agent_steps or [],
-        source_scores=source_scores or {},
-        quality_proxy=quality_proxy,
-    ))
-    comparisons = {"previous_model_version": previous_model_scores} if previous_model_scores else None
-    return emit_prometheus_metrics(
-        snapshot,
-        baseline_age_seconds=baseline_age_seconds,
-        comparison_scores=comparisons,
-    )
+```bash
+make stop
 ```
 
-See [the integration guide](docs/integration-guide.md), [baseline and calibration guide](docs/baseline-calibration.md), and [alert tuning guide](docs/alert-tuning.md).
-
-## Three Terms
-
-Change score:
-  0-100 measure of how much behavior moved from a reference.
-
-Comparison:
-  What current behavior is compared against: normal baseline, last window, or previous model version.
-
-Change size:
-  Small, medium, or large movement. Small often means noise; large usually deserves investigation.
-
-## What You Should See
-
-Normal:
-  Service health is normal and behavior change is low.
-
-Small Input Noise:
-  Small change rises, but large change stays quiet.
-
-Gradual Data Drift:
-  Input and embedding change increase over time.
-
-Model Change:
-  Behavior change spikes near the model-version marker.
-
-Recovery:
-  Behavior change falls and status returns toward Normal.
-
-Run locally with Docker:
+Docker Compose runs only the MLOps recipe:
 
 ```bash
 docker compose up
 ```
 
-Open Grafana at `http://localhost:3000`.
-
-Run locally without Docker, if you have `prometheus` and `grafana` installed:
+## Maintainer Validation
 
 ```bash
-python3 scripts/start_local_stack.py
+make validate
+make validate-ci
 ```
 
-Regenerate assets as a maintainer:
+Regenerate the MLOps assets:
 
 ```bash
-python3 scripts/generate_assets.py
-python3 scripts/capture_grafana_screenshots.py
-python3 scripts/validate_recipe.py
-python3 scripts/live_grafana_check.py
+npm run mlops:generate
+npm run mlops:capture
+npm run mlops:validate
+npm run mlops:live
 ```
 
-Advanced: [how MetricChrono computes change scores](docs/metricchrono-internals.md).
+Regenerate the robotics and industrial recipe packs:
 
-This recipe is not a production observability platform. MetricChrono is the measurement engine underneath the dashboard, not a replacement for clocks, labels, causal models, full drift platforms, or production incident policy.
+```bash
+npm run robotics:generate
+npm run robotics:capture
+npm run robotics:validate
+npm run industrial:generate
+npm run industrial:capture
+npm run industrial:validate
+```
+
+Regenerate and capture the shared telemetry view:
+
+```bash
+npm run telemetry:generate
+npm run telemetry:capture
+npm run telemetry:validate
+```

@@ -1,0 +1,58 @@
+{
+  "assets": [
+    "robot-r1",
+    "robot-r2",
+    "robot-r3"
+  ],
+  "default_run": "plays once and holds recovery unless --loop is passed",
+  "normal_peer_during_incident": "robot-r1",
+  "phase_metrics": [
+    {
+      "file": "phase-metrics/01-normal-navigation.prom",
+      "phase": "Normal navigation"
+    },
+    {
+      "file": "phase-metrics/02-harmless-small-jitter.prom",
+      "phase": "Harmless small jitter"
+    },
+    {
+      "file": "phase-metrics/03-perception-source-degradation.prom",
+      "phase": "Perception/source degradation"
+    },
+    {
+      "file": "phase-metrics/04-tracking-deviation.prom",
+      "phase": "Tracking deviation or control oscillation"
+    },
+    {
+      "file": "phase-metrics/05-actuator-effort.prom",
+      "phase": "Actuator effort / thermal or current change"
+    },
+    {
+      "file": "phase-metrics/06-incident-candidate.prom",
+      "phase": "Incident candidate"
+    },
+    {
+      "file": "phase-metrics/07-recovery.prom",
+      "phase": "Recovery or incomplete recovery"
+    }
+  ],
+  "phases": [
+    "Normal navigation",
+    "Harmless small jitter",
+    "Perception/source degradation",
+    "Tracking deviation or control oscillation",
+    "Actuator effort / thermal or current change",
+    "Incident candidate",
+    "Recovery or incomplete recovery"
+  ],
+  "recipe": "robotics-telemetry",
+  "visible_behavior": {
+    "Actuator effort / thermal or current change": "front-left wheel effort/current/thermal scores rise",
+    "Harmless small jitter": "small change rises, medium and large remain low, no incident",
+    "Incident candidate": "robot-r2 becomes investigate or incident_candidate with bounded replay window",
+    "Normal navigation": "overview normal, source agreement low, tracking stable",
+    "Perception/source degradation": "lidar disagreement and freshness age rise",
+    "Recovery or incomplete recovery": "scores fall; recovery state confirms or flags residual",
+    "Tracking deviation or control oscillation": "commanded velocity remains steady while actual velocity diverges"
+  }
+}

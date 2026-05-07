@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Plan B MLOps-first recipe assets."""
+"""Validate the MLOps recipe assets."""
 
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from generate_assets import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
+MLOPS_ROOT = ROOT / "recipes" / "mlops"
 
 EXPECTED_DASHBOARDS = {
     "AI Behavior Overview": {"panels": 8, "default": True},
@@ -69,10 +70,12 @@ REQUIRED_ARTIFACTS = [
     "grafana/provisioning/datasources/prometheus.yml",
     "grafana/provisioning/dashboards/dashboards.yml",
     "prometheus/prometheus.yml",
-    "docker-compose.yml",
     "rules/metricchrono_recipe_alerts.yml",
     "examples/python/metricchrono_mlops_adapter.py",
     "examples/python/demo_model_service.py",
+]
+REQUIRED_REPO_ARTIFACTS = [
+    "docker-compose.yml",
     "scripts/smoke_mlops_adapter.py",
     "scripts/smoke_alert_windows.py",
     "tests/test_mlops_adapter.py",
@@ -86,6 +89,15 @@ DESCRIPTION_SECTIONS = [
     "Why you care:",
     "How to read it:",
     "What to do next:",
+]
+LEGACY_ROOT_ASSET_DIRS = [
+    "docs",
+    "examples",
+    "fixtures",
+    "grafana",
+    "prometheus",
+    "rules",
+    "screenshots",
 ]
 
 
@@ -113,9 +125,9 @@ def has_forbidden_entry_word(text: str) -> str | None:
 
 
 def validate_dashboards(manifest: dict[str, Any], failures: list[str]) -> None:
-    dashboard_paths = sorted((ROOT / "grafana/dashboards").glob("*.json"))
+    dashboard_paths = sorted((MLOPS_ROOT / "grafana/dashboards").glob("*.json"))
     if len(dashboard_paths) != 6:
-        fail(f"expected 6 Plan B dashboard JSON files, found {len(dashboard_paths)}", failures)
+        fail(f"expected 6 MLOps dashboard JSON files, found {len(dashboard_paths)}", failures)
         return
 
     known_metrics = set(manifest["required_metrics"]) | set(manifest["advanced_metrics"])
@@ -188,7 +200,7 @@ def validate_dashboards(manifest: dict[str, Any], failures: list[str]) -> None:
             type_counts[panel.get("type", "")] += 1
 
     if panel_total != 40:
-        fail(f"expected 40 total Plan B panels including optional dashboards, found {panel_total}", failures)
+        fail(f"expected 40 total MLOps panels including optional dashboards, found {panel_total}", failures)
     if default_total != 16:
         fail(f"expected 16 default panels, found {default_total}", failures)
     if type_counts["table"] < 3:
@@ -208,7 +220,7 @@ def validate_metrics(manifest: dict[str, Any], failures: list[str]) -> None:
         if forbidden:
             fail(f"{metric} exposes forbidden high-cardinality labels: {sorted(forbidden)}", failures)
 
-    latest = (ROOT / "fixtures/prometheus/metricchrono_latest.prom").read_text(encoding="utf-8")
+    latest = (MLOPS_ROOT / "fixtures/prometheus/metricchrono_latest.prom").read_text(encoding="utf-8")
     for metric, metric_type in manifest["metric_types"].items():
         if f"# TYPE {metric} {metric_type}" not in latest:
             fail(f"{metric} missing TYPE line in Prometheus fixture", failures)
@@ -218,23 +230,23 @@ def validate_metrics(manifest: dict[str, Any], failures: list[str]) -> None:
                     fail(f"{metric} missing histogram suffix {suffix}", failures)
 
     if set(manifest["phase_names"]) != {phase["name"] for phase in PHASES}:
-        fail(f"scenario phases do not match Plan B labels: {manifest['phase_names']}", failures)
+        fail(f"scenario phases do not match MLOps recipe labels: {manifest['phase_names']}", failures)
     if set(manifest["comparisons"]) != set(COMPARISONS):
-        fail("comparison values do not match Plan B")
+        fail("comparison values do not match MLOps recipe")
     if set(manifest["change_sizes"]) != set(CHANGE_SIZES):
-        fail("change size values do not match Plan B")
+        fail("change size values do not match MLOps recipe")
     for assertion in manifest["assertions"]:
         if not assertion["passed"]:
             fail(f"scenario assertion failed: {assertion['name']} ({assertion['evidence']})", failures)
 
-    scenario = load_json(ROOT / "fixtures/synthetic_streams/scenario_series.json")
+    scenario = load_json(MLOPS_ROOT / "fixtures/synthetic_streams/scenario_series.json")
     samples = scenario.get("samples", [])
     if not samples:
         fail("scenario_series.json has no samples", failures)
     for field in ["input_features", "embedding", "output_distribution", "retrieved_ids", "agent_steps", "source_scores"]:
         if not all(field in sample.get("event", {}) for sample in samples):
             fail(f"scenario samples do not include raw event field: {field}", failures)
-    events_path = ROOT / "fixtures/synthetic_streams/events.jsonl"
+    events_path = MLOPS_ROOT / "fixtures/synthetic_streams/events.jsonl"
     if events_path.exists():
         event_lines = [line for line in events_path.read_text(encoding="utf-8").splitlines() if line.strip()]
         if len(event_lines) != SAMPLE_COUNT:
@@ -266,31 +278,38 @@ def validate_metrics(manifest: dict[str, Any], failures: list[str]) -> None:
 
 def validate_docs_and_artifacts(manifest: dict[str, Any], failures: list[str]) -> None:
     for rel in REQUIRED_DOCS + REQUIRED_ARTIFACTS:
+        path = MLOPS_ROOT / rel
+        if not path.exists():
+            fail(f"missing required MLOps recipe artifact: recipes/mlops/{rel}", failures)
+        elif path.is_file() and path.stat().st_size == 0:
+            fail(f"empty required MLOps recipe artifact: recipes/mlops/{rel}", failures)
+
+    for rel in REQUIRED_REPO_ARTIFACTS:
         path = ROOT / rel
         if not path.exists():
             fail(f"missing required artifact: {rel}", failures)
         elif path.is_file() and path.stat().st_size == 0:
             fail(f"empty required artifact: {rel}", failures)
 
-    if (ROOT / "docs/comparators.md").exists():
-        fail("old comparator taxonomy doc should not remain in Plan B output", failures)
+    if (MLOPS_ROOT / "docs/comparators.md").exists():
+        fail("old comparator taxonomy doc should not remain in MLOps output", failures)
 
     screenshots = {
-        path.name for path in (ROOT / "screenshots").glob("*.png")
+        path.name for path in (MLOPS_ROOT / "screenshots").glob("*.png")
     }
     required_screenshots = {"ai-behavior-overview.png", "drift-investigation.png"}
     missing_shots = required_screenshots - screenshots
     if missing_shots:
         fail(f"missing default dashboard screenshots: {sorted(missing_shots)}", failures)
     for shot in required_screenshots & screenshots:
-        path = ROOT / "screenshots" / shot
+        path = MLOPS_ROOT / "screenshots" / shot
         if path.stat().st_size < 10_000:
             fail(f"default dashboard screenshot looks too small: {shot}", failures)
 
-    readme = (ROOT / "README.md").read_text(encoding="utf-8") if (ROOT / "README.md").exists() else ""
+    readme = (MLOPS_ROOT / "README.md").read_text(encoding="utf-8") if (MLOPS_ROOT / "README.md").exists() else ""
     opening = "This recipe shows how to monitor AI behavior drift before labels arrive."
     if opening not in readme[:400]:
-        fail("README does not open with Plan B value statement", failures)
+        fail("README does not open with MLOps value statement", failures)
     if "![AI Behavior Overview](screenshots/ai-behavior-overview.png)" not in readme:
         fail("README does not immediately show AI Behavior Overview screenshot", failures)
     for term in ["Change score:", "Comparison:", "Change size:"]:
@@ -301,7 +320,7 @@ def validate_docs_and_artifacts(manifest: dict[str, Any], failures: list[str]) -
     if metricchrono_index != -1 and advanced_index != -1 and metricchrono_index < advanced_index:
         fail("README explains MetricChrono before the advanced link", failures)
 
-    alert_text = (ROOT / "docs/alert-rules.md").read_text(encoding="utf-8") + "\n" + (ROOT / "rules/metricchrono_recipe_alerts.yml").read_text(encoding="utf-8")
+    alert_text = (MLOPS_ROOT / "docs/alert-rules.md").read_text(encoding="utf-8") + "\n" + (MLOPS_ROOT / "rules/metricchrono_recipe_alerts.yml").read_text(encoding="utf-8")
     forbidden_alert_words = ["coarse", "tier tick", "epsilon", "delta", "ladder"]
     for word in forbidden_alert_words:
         if word in alert_text.lower():
@@ -316,41 +335,64 @@ def validate_docs_and_artifacts(manifest: dict[str, Any], failures: list[str]) -
         "docs/alert-tuning.md": ["Production tuning", "Behavior Drift Watch", "Possible AI Behavior Incident"],
         "docs/production-readiness.md": ["Production Readiness Checklist", "Baseline events", "Alerts are grouped"],
     }.items():
-        text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
+        text = (MLOPS_ROOT / rel).read_text(encoding="utf-8") if (MLOPS_ROOT / rel).exists() else ""
         for term in required_terms:
             if term not in text:
                 fail(f"{rel} missing required guidance term: {term}", failures)
 
     if "docker compose up" not in readme:
         fail("README does not present Docker Compose as the primary first-run path", failures)
-    if "python3 scripts/generate_assets.py\npython3 scripts/capture_grafana_screenshots.py\npython3 scripts/validate_recipe.py" not in readme:
+    if "npm run mlops:generate\nnpm run mlops:capture\nnpm run mlops:validate" not in readme:
         fail("README maintainer regeneration order would break screenshot validation", failures)
+    if "MetricChrono MLOps Recipes" not in readme:
+        fail("README does not name the MLOps Grafana folder", failures)
 
-    checklist = (ROOT / "docs/validation-checklist.md").read_text(encoding="utf-8")
+    provisioning_text = (MLOPS_ROOT / "grafana/provisioning/dashboards/dashboards.yml").read_text(encoding="utf-8")
+    prometheus_text = (MLOPS_ROOT / "prometheus/prometheus.yml").read_text(encoding="utf-8")
+    docker_text = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
+    for required, source_name, text in [
+        ("folder: MetricChrono MLOps Recipes", "MLOps Grafana provisioning", provisioning_text),
+        ("name: metricchrono-mlops-recipes", "MLOps Grafana provisioning", provisioning_text),
+        ("job_name: metricchrono-mlops-recipe", "MLOps Prometheus config", prometheus_text),
+        ("metricchrono-mlops-recipe:", "Docker Compose", docker_text),
+    ]:
+        if required not in text:
+            fail(f"{source_name} missing expected MLOps-specific name: {required}", failures)
+
+    checklist = (MLOPS_ROOT / "docs/validation-checklist.md").read_text(encoding="utf-8")
     unchecked = re.findall(r"- \[ \]", checklist)
     if unchecked:
         fail("validation checklist contains unchecked items", failures)
 
 
+def validate_no_legacy_root_assets(failures: list[str]) -> None:
+    existing = [rel for rel in LEGACY_ROOT_ASSET_DIRS if (ROOT / rel).exists()]
+    if existing:
+        fail(f"legacy root MLOps asset directories should not remain; use recipes/mlops instead: {existing}", failures)
+
+
 def main() -> int:
     failures: list[str] = []
-    manifest_path = ROOT / "fixtures/recipe_manifest.json"
+    if not MLOPS_ROOT.exists():
+        fail("missing canonical MLOps recipe directory: recipes/mlops", failures)
+    manifest_path = MLOPS_ROOT / "fixtures/recipe_manifest.json"
     if not manifest_path.exists():
-        fail("fixtures/recipe_manifest.json missing; run scripts/generate_assets.py first", failures)
+        fail("recipes/mlops/fixtures/recipe_manifest.json missing; run scripts/generate_assets.py first", failures)
         manifest: dict[str, Any] = {}
     else:
         manifest = load_json(manifest_path)
         validate_dashboards(manifest, failures)
         validate_metrics(manifest, failures)
     validate_docs_and_artifacts(manifest, failures)
+    validate_no_legacy_root_assets(failures)
 
     if failures:
-        print("Plan B recipe validation failed:")
+        print("MLOps recipe validation failed:")
         for item in failures:
             print(f"- {item}")
         return 1
-    print("Plan B recipe validation passed.")
-    print("Checked: vocabulary firewall, Plan B dashboards, user-facing metrics, docs, screenshots, scenario assertions, and alert language.")
+    print("MLOps recipe validation passed.")
+    print("Checked: recipes/mlops structure, vocabulary firewall, dashboards, user-facing metrics, docs, screenshots, scenario assertions, alert language, and absence of legacy root MLOps assets.")
     return 0
 
 

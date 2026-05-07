@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a local Prometheus/Grafana provisioning check for the recipe dashboards."""
+"""Run a local Prometheus/Grafana provisioning check for the MLOps dashboards."""
 
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from serve_metrics import ReplayState, make_handler
 
 
 ROOT = Path(__file__).resolve().parents[1]
+MLOPS_ROOT = ROOT / "recipes" / "mlops"
 DEFAULTS = {
     "$service": "checkout-ai",
     "$environment": "local",
@@ -105,7 +106,7 @@ def write_runtime_files(tmp: Path, prometheus_port: int, metrics_port: int, graf
   evaluation_interval: 1s
 
 scrape_configs:
-  - job_name: metricchrono-recipe
+  - job_name: metricchrono-mlops-recipe
     metrics_path: /metrics
     static_configs:
       - targets: ["127.0.0.1:{metrics_port}"]
@@ -128,14 +129,14 @@ datasources:
     (tmp / "grafana-provisioning/dashboards/dashboards.yml").write_text(
         f"""apiVersion: 1
 providers:
-  - name: metricchrono-recipes
+  - name: metricchrono-mlops-recipes
     orgId: 1
-    folder: MetricChrono Recipes
+    folder: MetricChrono MLOps Recipes
     type: file
     disableDeletion: false
     editable: true
     options:
-      path: {ROOT / "grafana/dashboards"}
+      path: {MLOPS_ROOT / "grafana/dashboards"}
 """,
         encoding="utf-8",
     )
@@ -245,7 +246,7 @@ def validate_dashboards(prometheus_url: str, grafana_url: str) -> dict[str, Any]
     missing = expected_titles - provisioned_titles
     if missing:
         imports: dict[str, str] = {}
-        for path in sorted((ROOT / "grafana/dashboards").glob("*.json")):
+        for path in sorted((MLOPS_ROOT / "grafana/dashboards").glob("*.json")):
             dashboard = json.loads(path.read_text(encoding="utf-8"))
             if dashboard.get("title") not in missing:
                 continue
@@ -266,7 +267,7 @@ def validate_dashboards(prometheus_url: str, grafana_url: str) -> dict[str, Any]
 
     checked_panels = 0
     empty_panels: list[str] = []
-    dashboard_paths = sorted((ROOT / "grafana/dashboards").glob("*.json"))
+    dashboard_paths = sorted((MLOPS_ROOT / "grafana/dashboards").glob("*.json"))
     for path in dashboard_paths:
         dashboard = json.loads(path.read_text(encoding="utf-8"))
         for panel in dashboard["panels"]:

@@ -1,0 +1,902 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: What was the robot doing before, during, and after the incident?\n\nHow to read it: The incident candidate should be bounded by pre-incident, incident, and recovery periods.\n\nWhy it matters: Replay without phase context wastes time.\n\nNext action: Use the highlighted interval for logs, traces, bag replay, or video review.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* mission$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "idle"
+                      },
+                      "1": {
+                        "color": "green",
+                        "text": "navigating"
+                      },
+                      "2": {
+                        "color": "blue",
+                        "text": "docking"
+                      },
+                      "3": {
+                        "color": "blue",
+                        "text": "manipulating"
+                      },
+                      "4": {
+                        "color": "yellow",
+                        "text": "paused"
+                      },
+                      "5": {
+                        "color": "red",
+                        "text": "fault"
+                      },
+                      "6": {
+                        "color": "blue",
+                        "text": "recovery"
+                      },
+                      "7": {
+                        "color": "red",
+                        "text": "estop"
+                      },
+                      "8": {
+                        "color": "orange",
+                        "text": "unknown"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* safety$|.* diagnostics$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "ok"
+                      },
+                      "1": {
+                        "color": "yellow",
+                        "text": "warn"
+                      },
+                      "2": {
+                        "color": "red",
+                        "text": "error"
+                      },
+                      "3": {
+                        "color": "orange",
+                        "text": "stale"
+                      },
+                      "4": {
+                        "color": "red",
+                        "text": "fault"
+                      },
+                      "5": {
+                        "color": "red",
+                        "text": "estop"
+                      },
+                      "6": {
+                        "color": "blue",
+                        "text": "recovery"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* incident window$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "pre incident"
+                      },
+                      "1": {
+                        "color": "red",
+                        "text": "incident"
+                      },
+                      "2": {
+                        "color": "blue",
+                        "text": "recovery"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_incident_window_state_code{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} incident window",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_mission_state_code{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} mission",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_diagnostic_state_code{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} diagnostics",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_safety_state_code{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} safety",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Incident Window Timeline",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: What changed first?\n\nHow to read it: This panel names the first subsystem or source whose change became meaningful inside the incident window.\n\nWhy it matters: Root-cause investigation depends heavily on ordering.\n\nNext action: Inspect the first changed source before later downstream symptoms.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (asset, subsystem, source, comparison) (max_over_time(metricchrono_robot_first_change_offset_seconds{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",subsystem=~\"perception|motion|actuator\"}[2m])) > 0",
+          "legendFormat": "{{subsystem}} {{source}} before main symptom",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "First Meaningful Change",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: How did the incident evolve?\n\nHow to read it: Look for which score rises first and which score remains high after recovery.\n\nWhy it matters: Incident investigation depends on cause, propagation, and recovery order.\n\nNext action: If source disagreement rises first, inspect source. If tracking rises first, inspect controls or actuation.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_overall_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=~\"known_good_baseline|last_window|same_mission_phase\"}",
+          "legendFormat": "{{asset}} overall {{comparison}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_motion_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"commanded_vs_actual\"}",
+          "legendFormat": "{{asset}} motion",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_tracking_deviation_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"commanded_vs_actual\"}",
+          "legendFormat": "{{asset}} tracking",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (source) (metricchrono_robot_source_disagreement_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\",comparison=~\"sensor_vs_estimator|source_vs_source\"})",
+          "legendFormat": "{{source}} disagreement",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Change Score Around Incident",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Was this one bad source or a broad system change?\n\nHow to read it: One hot row suggests a source-specific issue. Many hot rows suggest environment, estimator, clock sync, or global behavior change.\n\nWhy it matters: This prevents blaming a sensor when the scene or estimator changed globally.\n\nNext action: Use the row pattern to choose between source inspection and system-wide investigation.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (source, subsystem) (metricchrono_robot_source_disagreement_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\",comparison=~\"sensor_vs_estimator|source_vs_source\"})",
+          "legendFormat": "{{source}} {{subsystem}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Source Disagreement Around Incident",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Was this a control execution problem?\n\nHow to read it: If command remains steady but actual and effort change, the robot likely struggled to execute. If command changes first, planner or mission may be upstream.\n\nWhy it matters: This maps directly to controls and actuation debugging.\n\nNext action: Inspect controller, actuator, terrain or contact, payload, and safety constraints.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_commanded_velocity{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} commanded",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_actual_velocity{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} actual",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_tracking_deviation_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"commanded_vs_actual\"}",
+          "legendFormat": "{{asset}} tracking",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_actuator_effort_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} effort",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Command / Actual / Effort Around Incident",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Was the incident actually a telemetry freshness problem?\n\nHow to read it: Freshness gaps near incident start mean stale data may be the trigger or an important confounder.\n\nWhy it matters: Robotics incidents are often timestamp, transform, middleware, or source-latency issues.\n\nNext action: Inspect source timestamps, middleware, CPU, network, and driver health.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_source_missing_total{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} missing",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_source_late_total{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} late",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_source_freshness_seconds{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} freshness",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Missing / Late Data Around Incident",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: What should I replay or inspect offline?\n\nHow to read it: Rows give bounded windows and source categories instead of asking you to search the full stream.\n\nWhy it matters: Engineers do not want to search the full log stream.\n\nNext action: Use the suggested window and sources to inspect bags, logs, traces, or video.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (asset, time_window, subsystem, source, reason) (max_over_time(metricchrono_robot_replay_artifact{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",severity=~\"investigate|incident_candidate\"}[2m])) > 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "{{asset}} {{subsystem}} {{source}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Replay Artifacts",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true
+            },
+            "indexByName": {
+              "asset": 1,
+              "comparison": 5,
+              "next_dashboard": 6,
+              "rank": 0,
+              "reason": 4,
+              "severity": 8,
+              "source": 2,
+              "subsystem": 3,
+              "time_window": 7
+            },
+            "renameByName": {
+              "comparison": "reference",
+              "next_dashboard": "open",
+              "subsystem": "area",
+              "time_window": "window"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Did the robot actually recover?\n\nHow to read it: Recovery requires the state to return to normal and the relevant change, disagreement, and tracking scores to fall.\n\nWhy it matters: A robot can leave fault state while still behaving abnormally.\n\nNext action: If recovery state is normal but scores remain high, keep investigating.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_recovery_state{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",state=\"recovered\"}",
+          "legendFormat": "{{asset}} recovered",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_overall_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"known_good_baseline\"}",
+          "legendFormat": "{{asset}} overall",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (source) (metricchrono_robot_source_disagreement_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\",comparison=~\"sensor_vs_estimator|source_vs_source\"})",
+          "legendFormat": "{{source}} disagreement",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_tracking_deviation_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"commanded_vs_actual\"}",
+          "legendFormat": "{{asset}} tracking",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Recovery Confirmation",
+      "type": "stat"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [
+    "robotics-telemetry",
+    "incident-replay"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "name": "datasource",
+        "query": "prometheus",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "local-lab",
+          "value": "local-lab"
+        },
+        "name": "site",
+        "query": "local-lab",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "demo",
+          "value": "demo"
+        },
+        "name": "environment",
+        "query": "demo",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "fleet-a",
+          "value": "fleet-a"
+        },
+        "name": "asset_group",
+        "query": "fleet-a",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "robot-r2",
+          "value": "robot-r2"
+        },
+        "name": "asset",
+        "query": "robot-r2",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "lidar|front_left_wheel|localization|camera",
+          "value": "lidar|front_left_wheel|localization|camera"
+        },
+        "name": "source",
+        "query": "lidar|front_left_wheel|localization|camera",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "known_good_baseline",
+          "value": "known_good_baseline"
+        },
+        "name": "comparison",
+        "query": "known_good_baseline",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        },
+        "name": "change_size",
+        "query": ".*",
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Robot Incident Replay",
+  "uid": "robot-incident-replay",
+  "version": 1
+}

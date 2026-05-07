@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "examples/python"))
+sys.path.insert(0, str(ROOT / "recipes/mlops/examples/python"))
 
 from metricchrono_mlops_adapter import (  # noqa: E402
     BehaviorMonitor,

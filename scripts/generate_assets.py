@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Plan B MLOps-first MetricChrono recipe assets."""
+"""Generate the MLOps MetricChrono recipe assets."""
 
 from __future__ import annotations
 
@@ -12,9 +12,11 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+MLOPS_ROOT = ROOT / "recipes" / "mlops"
+sys.path.insert(0, str(MLOPS_ROOT / "examples" / "python"))
 sys.path.insert(0, str(ROOT))
 
-from examples.python.metricchrono_mlops_adapter import build_demo_events, snapshots_for_events  # noqa: E402
+from metricchrono_mlops_adapter import build_demo_events, snapshots_for_events  # noqa: E402
 
 SERVICE = "checkout-ai"
 ENVIRONMENT = "local"
@@ -131,13 +133,11 @@ def ensure_dirs() -> None:
         "rules",
         "screenshots",
     ]:
-        (ROOT / rel).mkdir(parents=True, exist_ok=True)
+        (MLOPS_ROOT / rel).mkdir(parents=True, exist_ok=True)
 
 
 def clean_generated_outputs() -> None:
-    for path in (ROOT / "grafana/dashboards").glob("*.json"):
-        path.unlink()
-    for path in (ROOT / "screenshots").glob("*"):
+    for path in (MLOPS_ROOT / "grafana/dashboards").glob("*.json"):
         path.unlink()
 
 
@@ -487,7 +487,10 @@ def scenario_assertions(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     drift_inputs_end = by_phase["Gradual Data Drift"][-1]["scores"]["input"]
     model_jump = max(item["scores"]["behavior"] for item in by_phase["Model Change"])
     recovery_end = by_phase["Recovery"][-1]["scores"]["behavior"]
-    quality_drops_after_behavior = by_phase["Gradual Data Drift"][-1]["scores"]["behavior"] > by_phase["Gradual Data Drift"][-1]["quality_proxy"] - 35
+    quality_drops_after_behavior = any(
+        record["scores"]["behavior"] > 25 and record["quality_proxy"] > 94
+        for record in by_phase["Gradual Data Drift"]
+    )
     return [
         {"name": "Service health stays normal while behavior changes", "passed": normal_health, "evidence": "request rate and latency are stable in the synthetic scenario"},
         {"name": "Normal phase has low behavior change", "passed": normal_behavior < 15, "evidence": f"max Normal behavior change = {normal_behavior:.1f}"},
@@ -495,7 +498,7 @@ def scenario_assertions(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         {"name": "Gradual Data Drift increases input change", "passed": drift_inputs_end > drift_inputs_start + 25, "evidence": f"input score {drift_inputs_start:.1f} -> {drift_inputs_end:.1f}"},
         {"name": "Model Change creates the largest behavior jump", "passed": model_jump > 80, "evidence": f"max Model Change behavior score = {model_jump:.1f}"},
         {"name": "Recovery lowers behavior change", "passed": recovery_end < 20, "evidence": f"final Recovery behavior score = {recovery_end:.1f}"},
-        {"name": "Behavior signal is visible before quality proxy fully drops", "passed": quality_drops_after_behavior, "evidence": "behavior score rises during Gradual Data Drift while quality remains delayed"},
+        {"name": "Behavior signal is visible before quality proxy fully drops", "passed": quality_drops_after_behavior, "evidence": "behavior score exceeds 25 while quality proxy is still above 94 during Gradual Data Drift"},
     ]
 
 
@@ -735,7 +738,7 @@ def optional_internals_dashboard(scope: str, g: list[dict[str, int]]) -> list[di
 def write_dashboard_assets() -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
     for filename, definition, is_default in dashboard_definitions():
-        path = ROOT / "grafana/dashboards" / filename
+        path = MLOPS_ROOT / "grafana/dashboards" / filename
         path.write_text(json.dumps(definition, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         output.append({"file": str(path.relative_to(ROOT)), "title": definition["title"], "panel_count": len(definition["panels"]), "default": is_default, "types": [panel["type"] for panel in definition["panels"]]})
     return output
@@ -743,13 +746,13 @@ def write_dashboard_assets() -> list[dict[str, Any]]:
 
 def write_fixture_assets() -> dict[str, Any]:
     state, records = build_state_through(SAMPLE_COUNT - 1)
-    (ROOT / "fixtures/prometheus/metricchrono_latest.prom").write_text(state.render(), encoding="utf-8")
-    (ROOT / "fixtures/synthetic_streams/scenario_series.json").write_text(json.dumps({"service": SERVICE, "environment": ENVIRONMENT, "model": MODEL, "scrape_interval_seconds": SCRAPE_INTERVAL_SECONDS, "phases": PHASES, "samples": records}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    (ROOT / "fixtures/synthetic_streams/events.jsonl").write_text(
+    (MLOPS_ROOT / "fixtures/prometheus/metricchrono_latest.prom").write_text(state.render(), encoding="utf-8")
+    (MLOPS_ROOT / "fixtures/synthetic_streams/scenario_series.json").write_text(json.dumps({"service": SERVICE, "environment": ENVIRONMENT, "model": MODEL, "scrape_interval_seconds": SCRAPE_INTERVAL_SECONDS, "phases": PHASES, "samples": records}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (MLOPS_ROOT / "fixtures/synthetic_streams/events.jsonl").write_text(
         "".join(json.dumps(record["event"], sort_keys=True) + "\n" for record in records),
         encoding="utf-8",
     )
-    (ROOT / "fixtures/metricchrono-ladder.json").write_text(json.dumps({"tiers": LADDER, "advanced_only": True}, indent=2) + "\n", encoding="utf-8")
+    (MLOPS_ROOT / "fixtures/metricchrono-ladder.json").write_text(json.dumps({"tiers": LADDER, "advanced_only": True}, indent=2) + "\n", encoding="utf-8")
     return {
         "required_metrics": sorted(USER_METRICS),
         "advanced_metrics": sorted(INTERNAL_METRICS),
@@ -766,7 +769,7 @@ def write_fixture_assets() -> dict[str, Any]:
 
 
 def write_provisioning() -> None:
-    (ROOT / "grafana/provisioning/datasources/prometheus.yml").write_text("""apiVersion: 1
+    (MLOPS_ROOT / "grafana/provisioning/datasources/prometheus.yml").write_text("""apiVersion: 1
 datasources:
   - name: Prometheus
     uid: Prometheus
@@ -776,18 +779,18 @@ datasources:
     isDefault: true
     editable: true
 """, encoding="utf-8")
-    (ROOT / "grafana/provisioning/dashboards/dashboards.yml").write_text("""apiVersion: 1
+    (MLOPS_ROOT / "grafana/provisioning/dashboards/dashboards.yml").write_text("""apiVersion: 1
 providers:
-  - name: metricchrono-recipes
+  - name: metricchrono-mlops-recipes
     orgId: 1
-    folder: MetricChrono Recipes
+    folder: MetricChrono MLOps Recipes
     type: file
     disableDeletion: false
     editable: true
     options:
       path: /var/lib/grafana/dashboards
 """, encoding="utf-8")
-    (ROOT / "prometheus/prometheus.yml").write_text("""global:
+    (MLOPS_ROOT / "prometheus/prometheus.yml").write_text("""global:
   scrape_interval: 1s
   evaluation_interval: 1s
 
@@ -795,13 +798,13 @@ rule_files:
   - /etc/prometheus/rules/*.yml
 
 scrape_configs:
-  - job_name: metricchrono-recipe
+  - job_name: metricchrono-mlops-recipe
     metrics_path: /metrics
     static_configs:
-      - targets: ["metricchrono-recipe:8000"]
+      - targets: ["metricchrono-mlops-recipe:8000"]
 """, encoding="utf-8")
     (ROOT / "docker-compose.yml").write_text("""services:
-  metricchrono-recipe:
+  metricchrono-mlops-recipe:
     image: python:3.13-slim
     working_dir: /repo
     command: sh -c "apt-get update && apt-get install -y --no-install-recommends cargo && rm -rf /var/lib/apt/lists/* && python -m pip install -q -r requirements.txt && python scripts/serve_metrics.py --host 0.0.0.0 --port 8000"
@@ -817,12 +820,12 @@ scrape_configs:
       - --storage.tsdb.path=/prometheus
       - --web.enable-lifecycle
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./rules:/etc/prometheus/rules:ro
+      - ./recipes/mlops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./recipes/mlops/rules:/etc/prometheus/rules:ro
     ports:
       - "9090:9090"
     depends_on:
-      - metricchrono-recipe
+      - metricchrono-mlops-recipe
 
   grafana:
     image: grafana/grafana:11.3.0
@@ -831,8 +834,8 @@ scrape_configs:
       GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
       GF_USERS_DEFAULT_THEME: light
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./recipes/mlops/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./recipes/mlops/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - "3000:3000"
     depends_on:
@@ -841,7 +844,7 @@ scrape_configs:
 
 
 def write_rules() -> None:
-    (ROOT / "rules/metricchrono_recipe_alerts.yml").write_text("""groups:
+    (MLOPS_ROOT / "rules/metricchrono_recipe_alerts.yml").write_text("""groups:
   - name: ai-behavior-recipe-examples
     rules:
       - alert: BehaviorDriftWatch
@@ -931,13 +934,13 @@ def table(rows: list[tuple[str, ...]], headers: tuple[str, ...]) -> str:
 
 
 def write_docs(manifest: dict[str, Any], dashboards: list[dict[str, Any]]) -> None:
-    readme = """# MetricChrono MLOps / AI Observability Recipes
+    readme = """# MetricChrono MLOps / AI Observability Recipe
 
 This recipe shows how to monitor AI behavior drift before labels arrive.
 
 You will run a local model-service scenario where traffic, latency, and errors stay normal while the model's behavior changes. The dashboards show whether the change came from inputs, outputs, retrieval, agent workflow, or a deploy.
 
-The default local run plays the two-minute scenario once and then holds recovery. Restart the stack to replay it, or run `scripts/serve_metrics.py --loop` when you explicitly want a looping demo.
+The default local run plays the two-minute scenario once and then holds recovery. Restart the stack to replay it, or run `npm run mlops:serve -- --loop` when you explicitly want a looping demo.
 
 ![AI Behavior Overview](screenshots/ai-behavior-overview.png)
 
@@ -1029,37 +1032,37 @@ Model Change:
 Recovery:
   Behavior change falls and status returns toward Normal.
 
-Run locally with Docker:
+Run this MLOps recipe server from the repository root:
+
+```bash
+npm run mlops:start
+```
+
+Open the Grafana URL printed by the command. The dashboards are provisioned in the `MetricChrono MLOps Recipes` Grafana folder.
+
+Run only this MLOps recipe with Docker instead:
 
 ```bash
 docker compose up
 ```
 
-Open Grafana at `http://localhost:3000`.
-
-Run locally without Docker, if you have `prometheus` and `grafana` installed:
+Regenerate MLOps assets as a maintainer:
 
 ```bash
-python3 scripts/start_local_stack.py
-```
-
-Regenerate assets as a maintainer:
-
-```bash
-python3 scripts/generate_assets.py
-python3 scripts/capture_grafana_screenshots.py
-python3 scripts/validate_recipe.py
-python3 scripts/live_grafana_check.py
+npm run mlops:generate
+npm run mlops:capture
+npm run mlops:validate
+npm run mlops:live
 ```
 
 Advanced: [how MetricChrono computes change scores](docs/metricchrono-internals.md).
 
 This recipe is not a production observability platform. MetricChrono is the measurement engine underneath the dashboard, not a replacement for clocks, labels, causal models, full drift platforms, or production incident policy.
 """
-    (ROOT / "README.md").write_text(readme, encoding="utf-8")
+    (MLOPS_ROOT / "README.md").write_text(readme, encoding="utf-8")
 
     metric_rows = [(name, kind.title(), help_text) for name, (kind, help_text) in USER_METRICS.items()]
-    (ROOT / "docs/metric-contract.md").write_text(
+    (MLOPS_ROOT / "docs/metric-contract.md").write_text(
         "# User-Facing Metric Contract\n\n"
         "The default dashboards query user-facing MLOps metrics derived from bounded model-service events. Raw MetricChrono internals are advanced-only.\n\n"
         "Stable labels: `service`, `environment`, `model`, `model_version`, `stream`, `workload`, `comparison`, `change_size`.\n\n"
@@ -1071,7 +1074,7 @@ This recipe is not a production observability platform. MetricChrono is the meas
         + table(metric_rows, ("Metric", "Type", "Meaning")) + "\n",
         encoding="utf-8",
     )
-    (ROOT / "docs/integration-guide.md").write_text(
+    (MLOPS_ROOT / "docs/integration-guide.md").write_text(
         """# Integration Guide
 
 This recipe is meant to sit beside the metrics your ML service already emits. Keep request rate, latency, and errors as normal service-health metrics, then add the MetricChrono behavior layer from bounded model events.
@@ -1153,7 +1156,7 @@ Add the adapter after model inference and before response logging. For batch job
 """,
         encoding="utf-8",
     )
-    (ROOT / "docs/baseline-calibration.md").write_text(
+    (MLOPS_ROOT / "docs/baseline-calibration.md").write_text(
         """# Baseline And Calibration Guide
 
 Do not copy the demo thresholds directly into production. The local scenario is accelerated so the alerts can demonstrate behavior in a two-minute run.
@@ -1192,7 +1195,7 @@ Inputs, embeddings, outputs, retrieval, and agent paths have different normal va
 """,
         encoding="utf-8",
     )
-    (ROOT / "docs/alert-tuning.md").write_text(
+    (MLOPS_ROOT / "docs/alert-tuning.md").write_text(
         """# Alert Tuning Guide
 
 The rules in `rules/metricchrono_recipe_alerts.yml` are demo-safe examples. They are scoped by `service`, `environment`, `model`, and `stream`, and their `for:` windows are short enough to fire during the accelerated local scenario.
@@ -1251,7 +1254,7 @@ Production tuning:
 """,
         encoding="utf-8",
     )
-    (ROOT / "docs/production-readiness.md").write_text(
+    (MLOPS_ROOT / "docs/production-readiness.md").write_text(
         """# Production Readiness Checklist
 
 Use this before adapting the recipe to a real service.
@@ -1269,17 +1272,17 @@ Use this before adapting the recipe to a real service.
 """,
         encoding="utf-8",
     )
-    (ROOT / "docs/glossary.md").write_text(
+    (MLOPS_ROOT / "docs/glossary.md").write_text(
         "# Short Glossary\n\n"
         "Change score: a 0-100 signal showing how much the AI system's behavior moved from a reference.\n\n"
         "Comparison: what current behavior is compared against: normal baseline, last window, or previous model version.\n\n"
         "Change size: whether the movement looks small, medium, or large.\n",
         encoding="utf-8",
     )
-    (ROOT / "docs/scenario.md").write_text(
+    (MLOPS_ROOT / "docs/scenario.md").write_text(
         "# Local Scenario\n\n"
         "A model service receives steady traffic. Latency and error rate stay normal. Inputs slowly drift, embeddings move away from baseline, model outputs shift, a model version change causes a sharper behavior jump, and later behavior recovers.\n\n"
-        "The default local run plays this accelerated two-minute scenario once and then holds recovery. Restart the stack to replay it, or run `scripts/serve_metrics.py --loop` when you explicitly want a looping demo.\n\n"
+        "The default local run plays this accelerated two-minute scenario once and then holds recovery. Restart the stack to replay it, or run `npm run mlops:serve -- --loop` when you explicitly want a looping demo.\n\n"
         + table([(p["name"], str(p["start"]), str(p["end"])) for p in PHASES], ("Phase", "Start sample", "End sample"))
         + "\n\n## Assertions\n\n"
         + "\n".join(f"- [{'x' if a['passed'] else ' '}] {a['name']}: {a['evidence']}" for a in manifest["assertions"])
@@ -1295,8 +1298,8 @@ Use this before adapting the recipe to a real service.
         "The key lesson is that request rate, latency, and error rate can look healthy while AI behavior changes.",
         "RAG, agent, and source-agreement dashboards are optional workload-specific views, not the newcomer entry path.",
     ])
-    (ROOT / "docs/expected-behavior.md").write_text(expected + "\n", encoding="utf-8")
-    (ROOT / "docs/alert-rules.md").write_text(
+    (MLOPS_ROOT / "docs/expected-behavior.md").write_text(expected + "\n", encoding="utf-8")
+    (MLOPS_ROOT / "docs/alert-rules.md").write_text(
         "# Alert Examples\n\nThese are local recipe examples. They are scoped and short enough to fire during the accelerated demo; lengthen them for production.\n\n"
         "- Behavior drift watch: behavior_change_score is elevated for a sustained period.\n"
         "- Possible AI behavior incident: large_change_score and behavior_change_score are high, optionally with quality falling.\n"
@@ -1306,7 +1309,7 @@ Use this before adapting the recipe to a real service.
         "Concrete Prometheus examples are in `rules/metricchrono_recipe_alerts.yml`. Tuning guidance is in `docs/alert-tuning.md`.\n",
         encoding="utf-8",
     )
-    (ROOT / "docs/metricchrono-internals.md").write_text(
+    (MLOPS_ROOT / "docs/metricchrono-internals.md").write_text(
         """# Advanced: MetricChrono Internals
 
 This page is for maintainers, reviewers, and teams adapting the recipe to a real service. You do not need it for first-run dashboard triage.
@@ -1428,25 +1431,25 @@ MetricChrono measures deterministic movement from a reference. It does not prove
 """,
         encoding="utf-8",
     )
-    (ROOT / "docs/enterprise-boundary.md").write_text(
+    (MLOPS_ROOT / "docs/enterprise-boundary.md").write_text(
         "# Enterprise Boundary\n\nThis recipe is an open-source local demonstration with generic dashboard JSON, synthetic fixtures, local metric examples, and explanatory queries.\n\nIt does not include production auto-calibration, production dashboards, managed observability, persistent audit logs, incident replay, source-reliability learning, organization-specific connectors, Datadog/Splunk/Kafka/Grafana Cloud integrations, SSO/RBAC, compliance reports, or enterprise alert-policy tuning.\n",
         encoding="utf-8",
     )
-    (ROOT / "docs/failure-modes.md").write_text(
+    (MLOPS_ROOT / "docs/failure-modes.md").write_text(
         "# Failure-Mode Guide\n\n"
-        "- No dashboard data: confirm `scripts/start_local_stack.py` started all services.\n"
+        "- No dashboard data: confirm `npm run mlops:start` started all services.\n"
         "- Service health looks bad: inspect request, latency, and error metrics first.\n"
         "- Behavior changes but quality does not: this is expected early-warning behavior in the demo.\n"
         "- Optional dashboards are empty: run the scenario long enough to cover the workload-specific period.\n"
         "- Advanced internals are confusing: return to AI Behavior Overview; internals are not required for MLOps triage.\n",
         encoding="utf-8",
     )
-    (ROOT / "docs/package-sources.md").write_text(
+    (MLOPS_ROOT / "docs/package-sources.md").write_text(
         "# MetricChrono Package Sources\n\n"
         "- Rust crates.io packages: `metricchrono-core`, `metricchrono-log`, `metricchrono-consensus`, and `metricchrono-ffi` at version `0.1.0`.\n"
         "- PyPI package: `metricchrono` at version `0.1.0`.\n"
         "- npm package: `@metricchrono/core` at version `0.1.0`.\n\n"
-        "The dashboard uses a user-facing metric layer. The practical adapter lives in `examples/python/metricchrono_mlops_adapter.py`; package smoke examples remain in `src/bin`, `examples/python/metricchrono_smoke.py`, and `examples/js`.\n",
+        "The dashboard uses a user-facing metric layer. The practical adapter lives in `examples/python/metricchrono_mlops_adapter.py`; package smoke examples live in `src/bin`, `recipes/mlops/examples/python/metricchrono_smoke.py`, and `recipes/mlops/examples/js`.\n",
         encoding="utf-8",
     )
     checklist = [
@@ -1473,7 +1476,7 @@ MetricChrono measures deterministic movement from a reference. It does not prove
         "The README presents Docker Compose as the primary first-run path.",
         "CI validates dashboards, metrics, adapter behavior, Prometheus rules, Rust, and JavaScript examples.",
     ]
-    (ROOT / "docs/validation-checklist.md").write_text("# Validation Checklist\n\n" + "\n".join(f"- [x] {item}" for item in checklist) + "\n", encoding="utf-8")
+    (MLOPS_ROOT / "docs/validation-checklist.md").write_text("# Validation Checklist\n\n" + "\n".join(f"- [x] {item}" for item in checklist) + "\n", encoding="utf-8")
 
 
 def write_manifest(manifest: dict[str, Any], dashboards: list[dict[str, Any]]) -> None:
@@ -1482,7 +1485,7 @@ def write_manifest(manifest: dict[str, Any], dashboards: list[dict[str, Any]]) -
     manifest["default_panel_count"] = sum(item["panel_count"] for item in dashboards if item["default"])
     manifest["panel_total"] = sum(item["panel_count"] for item in dashboards)
     manifest["panel_type_counts"] = dict(sorted({panel_type: sum(item["types"].count(panel_type) for item in dashboards) for panel_type in sorted({ptype for item in dashboards for ptype in item["types"]})}.items()))
-    (ROOT / "fixtures/recipe_manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (MLOPS_ROOT / "fixtures/recipe_manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def main() -> None:
@@ -1494,7 +1497,7 @@ def main() -> None:
     write_rules()
     write_docs(manifest, dashboards)
     write_manifest(manifest, dashboards)
-    print(f"Generated Plan B assets: {len(dashboards)} dashboards, {sum(item['panel_count'] for item in dashboards)} panels.")
+    print(f"Generated MLOps assets: {len(dashboards)} dashboards, {sum(item['panel_count'] for item in dashboards)} panels.")
 
 
 if __name__ == "__main__":

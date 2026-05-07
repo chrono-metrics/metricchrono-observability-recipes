@@ -1,0 +1,1105 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: What was the robot trying to do when the change happened?\n\nHow to read it: Look for whether a change occurred during normal navigation, a state transition, recovery, or a safety event.\n\nWhy it matters: Phase context separates expected maneuver changes from suspicious behavior during steady work.\n\nNext action: If the change overlaps fault, recovery, paused, or estop, open Robot Incident Replay.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* mission$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "idle"
+                      },
+                      "1": {
+                        "color": "green",
+                        "text": "navigating"
+                      },
+                      "2": {
+                        "color": "blue",
+                        "text": "docking"
+                      },
+                      "3": {
+                        "color": "blue",
+                        "text": "manipulating"
+                      },
+                      "4": {
+                        "color": "yellow",
+                        "text": "paused"
+                      },
+                      "5": {
+                        "color": "red",
+                        "text": "fault"
+                      },
+                      "6": {
+                        "color": "blue",
+                        "text": "recovery"
+                      },
+                      "7": {
+                        "color": "red",
+                        "text": "estop"
+                      },
+                      "8": {
+                        "color": "orange",
+                        "text": "unknown"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* safety$|.* diagnostics$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "ok"
+                      },
+                      "1": {
+                        "color": "yellow",
+                        "text": "warn"
+                      },
+                      "2": {
+                        "color": "red",
+                        "text": "error"
+                      },
+                      "3": {
+                        "color": "orange",
+                        "text": "stale"
+                      },
+                      "4": {
+                        "color": "red",
+                        "text": "fault"
+                      },
+                      "5": {
+                        "color": "red",
+                        "text": "estop"
+                      },
+                      "6": {
+                        "color": "blue",
+                        "text": "recovery"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* incident window$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "pre incident"
+                      },
+                      "1": {
+                        "color": "red",
+                        "text": "incident"
+                      },
+                      "2": {
+                        "color": "blue",
+                        "text": "recovery"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_mission_state_code{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} mission",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_safety_state_code{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} safety",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_diagnostic_state_code{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} diagnostics",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Fleet / Mission State",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Which robot is behaving differently right now?\n\nHow to read it: Rows are robots. Watch, investigate, and incident candidate bands show robots whose behavior differs from the selected reference.\n\nWhy it matters: A fleet engineer first needs to know whether this is one robot, several robots, or the whole fleet.\n\nNext action: If one robot is abnormal, inspect source agreement for that robot. If many robots change together, inspect environment, map, network, or mission update.",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "green",
+                  "text": "normal"
+                },
+                "1": {
+                  "color": "yellow",
+                  "text": "watch"
+                },
+                "2": {
+                  "color": "orange",
+                  "text": "investigate"
+                },
+                "3": {
+                  "color": "red",
+                  "text": "incident candidate"
+                },
+                "4": {
+                  "color": "green",
+                  "text": "recovered"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (asset) (metricchrono_robot_change_state{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=~\"$comparison\"})",
+          "legendFormat": "{{asset}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Fleet Change State By Robot",
+      "type": "status-history"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Did the robot's overall behavior move outside normal variation?\n\nHow to read it: A low stable score means ordinary behavior. A rising score means the robot is moving away from the selected reference.\n\nWhy it matters: Robot logs are too large to inspect blindly, so this gives a first signal for when to look.\n\nNext action: If high only versus last_window, look for a sudden disturbance. If high versus known_good_baseline but flat, look for slow drift or changed conditions.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_overall_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=~\"$comparison\"}",
+          "legendFormat": "{{asset}} {{comparison}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Overall Robot Change Score",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is this harmless jitter or a large behavior shift?\n\nHow to read it: Small change alone is usually jitter. Sustained medium change deserves attention. Large change is an incident candidate.\n\nWhy it matters: Robotics data is noisy; engineers need to separate vibration and chatter from meaningful regime shifts.\n\nNext action: If large change appears, inspect Source Agreement and Incident Replay. If only small rises, inspect freshness or controller jitter.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (change_size) (metricchrono_robot_change_score_by_size{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",change_size=~\"$change_size\",comparison=~\"$comparison\"})",
+          "legendFormat": "{{change_size}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Change Size Split",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Did the robot fail to execute the motion it was commanded to perform?\n\nHow to read it: A rising tracking deviation with stable command means actual motion is separating from requested motion.\n\nWhy it matters: This separates upstream planning or perception problems from downstream execution and control problems.\n\nNext action: If tracking deviation rises, inspect actuator effort, motor current, temperature, wheel slip, joint effort, and safety state.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_tracking_deviation_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"commanded_vs_actual\"}",
+          "legendFormat": "{{asset}} tracking deviation",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Commanded vs Actual Tracking Deviation",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Which sensor or estimator disagrees most with the rest of the robot?\n\nHow to read it: The highest bar is the source that currently disagrees most. It points to where to inspect first but does not prove fault.\n\nWhy it matters: When localization, odometry, IMU, lidar, or camera disagree, engineers need a ranked list.\n\nNext action: Open Robot Source Agreement for the top source.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "topk(5, max by (asset, source) (metricchrono_robot_source_disagreement_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\",comparison=~\"sensor_vs_estimator|source_vs_source\"}))",
+          "legendFormat": "{{asset}} {{source}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Sensor / Estimator Disagreement Summary",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is the dashboard seeing a behavior change, or did telemetry go missing?\n\nHow to read it: Missing-source counters rising during a change event mean disagreement may be caused by data loss or stale sources.\n\nWhy it matters: Robotics incidents often look like state changes when the real problem is delayed or stale sensor data.\n\nNext action: Inspect drivers, middleware, CPU load, network, and source timestamps before blaming robot behavior.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (asset) (metricchrono_robot_source_missing_total{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"})",
+          "legendFormat": "{{asset}} missing",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (asset) (metricchrono_robot_source_late_total{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"})",
+          "legendFormat": "{{asset}} late",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (asset) (metricchrono_robot_topic_freshness_seconds{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"})",
+          "legendFormat": "{{asset}} freshness",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Missing Or Late Sources",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is the robot working harder than usual to perform the same task?\n\nHow to read it: Rising effort, current, or temperature change while mission state is unchanged can indicate load, terrain, joint issue, motor degradation, or compensation.\n\nWhy it matters: Mechanical and actuator problems often appear before a hard fault.\n\nNext action: Inspect the corresponding joint, wheel, motor, payload, terrain, or docking interaction.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (asset) (metricchrono_robot_actuator_effort_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"})",
+          "legendFormat": "{{asset}} effort",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (asset) (metricchrono_robot_motor_current_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"})",
+          "legendFormat": "{{asset}} current",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (asset) (metricchrono_robot_motor_temperature_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"})",
+          "legendFormat": "{{asset}} temperature",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Actuator Effort / Thermal Change",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Did a safety or diagnostic state change explain the behavior change?\n\nHow to read it: Look for warnings or faults aligned with change-score spikes.\n\nWhy it matters: Engineers should not infer from change metrics when the robot already emitted a clear safety or diagnostic signal.\n\nNext action: If diagnostic state changed, use it as the primary investigation path and use change panels as supporting context.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* mission$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "idle"
+                      },
+                      "1": {
+                        "color": "green",
+                        "text": "navigating"
+                      },
+                      "2": {
+                        "color": "blue",
+                        "text": "docking"
+                      },
+                      "3": {
+                        "color": "blue",
+                        "text": "manipulating"
+                      },
+                      "4": {
+                        "color": "yellow",
+                        "text": "paused"
+                      },
+                      "5": {
+                        "color": "red",
+                        "text": "fault"
+                      },
+                      "6": {
+                        "color": "blue",
+                        "text": "recovery"
+                      },
+                      "7": {
+                        "color": "red",
+                        "text": "estop"
+                      },
+                      "8": {
+                        "color": "orange",
+                        "text": "unknown"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* safety$|.* diagnostics$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "ok"
+                      },
+                      "1": {
+                        "color": "yellow",
+                        "text": "warn"
+                      },
+                      "2": {
+                        "color": "red",
+                        "text": "error"
+                      },
+                      "3": {
+                        "color": "orange",
+                        "text": "stale"
+                      },
+                      "4": {
+                        "color": "red",
+                        "text": "fault"
+                      },
+                      "5": {
+                        "color": "red",
+                        "text": "estop"
+                      },
+                      "6": {
+                        "color": "blue",
+                        "text": "recovery"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* incident window$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "pre incident"
+                      },
+                      "1": {
+                        "color": "red",
+                        "text": "incident"
+                      },
+                      "2": {
+                        "color": "blue",
+                        "text": "recovery"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_safety_state_code{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} safety",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_diagnostic_state_code{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} diagnostics",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Safety And Diagnostics Timeline",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Where should I click first?\n\nHow to read it: The top row is the highest-priority investigation candidate and names the robot, subsystem, source, comparison, and reason.\n\nWhy it matters: Operators and engineers need a triage queue, not twenty unrelated graphs.\n\nNext action: Open Robot Incident Replay for the top row.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (rank, asset, subsystem, source, reason, next_dashboard, comparison) (max_over_time(metricchrono_robot_inspection_candidate{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",severity=~\"watch|investigate|incident_candidate\"}[2m])) > 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "{{asset}} {{subsystem}} {{source}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Top Incident Candidates",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true
+            },
+            "indexByName": {
+              "asset": 1,
+              "comparison": 5,
+              "next_dashboard": 6,
+              "rank": 0,
+              "reason": 4,
+              "severity": 8,
+              "source": 2,
+              "subsystem": 3,
+              "time_window": 7
+            },
+            "renameByName": {
+              "comparison": "reference",
+              "next_dashboard": "open",
+              "subsystem": "area",
+              "time_window": "window"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [
+    "robotics-telemetry",
+    "overview"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "name": "datasource",
+        "query": "prometheus",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "local-lab",
+          "value": "local-lab"
+        },
+        "name": "site",
+        "query": "local-lab",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "demo",
+          "value": "demo"
+        },
+        "name": "environment",
+        "query": "demo",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "fleet-a",
+          "value": "fleet-a"
+        },
+        "name": "asset_group",
+        "query": "fleet-a",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        },
+        "name": "asset",
+        "query": ".*",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        },
+        "name": "source",
+        "query": ".*",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "known_good_baseline",
+          "value": "known_good_baseline"
+        },
+        "name": "comparison",
+        "query": "known_good_baseline",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        },
+        "name": "change_size",
+        "query": ".*",
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Robot Fleet Overview",
+  "uid": "robot-fleet-overview",
+  "version": 1
+}

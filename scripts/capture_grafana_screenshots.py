@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Capture real Grafana dashboard screenshots for the recipe."""
+"""Capture real Grafana dashboard screenshots for the MLOps recipe."""
 
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from serve_metrics import ReplayState, make_handler
 
 
 ROOT = Path(__file__).resolve().parents[1]
+MLOPS_ROOT = ROOT / "recipes" / "mlops"
 SCREENSHOTS = {
     "AI Behavior Overview": "ai-behavior-overview.png",
     "Drift Investigation": "drift-investigation.png",
@@ -73,11 +74,11 @@ def main() -> int:
             validate_dashboards(prometheus_url, grafana_url)
             search = http_json(f"{grafana_url}/api/search?query=", auth=True)
             by_title = {item["title"]: item for item in search if item.get("type") == "dash-db"}
-            (ROOT / "screenshots").mkdir(exist_ok=True)
+            (MLOPS_ROOT / "screenshots").mkdir(exist_ok=True)
             for title, filename in SCREENSHOTS.items():
                 item = by_title[title]
                 url = f"{grafana_url}{item['url']}?orgId=1&from=now-2m&to=now&kiosk"
-                capture(url, ROOT / "screenshots" / filename)
+                capture(url, MLOPS_ROOT / "screenshots" / filename)
     finally:
         metrics_server.shutdown()
         metrics_thread.join(timeout=5)
@@ -87,7 +88,7 @@ def main() -> int:
             stop_process(grafana_proc)
         for handle in log_handles:
             handle.close()
-    print("Captured 2 default Grafana dashboard screenshots in screenshots/.")
+    print("Captured 2 default Grafana dashboard screenshots in recipes/mlops/screenshots/.")
     return 0
 
 

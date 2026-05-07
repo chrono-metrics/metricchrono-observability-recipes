@@ -1,0 +1,1026 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Which sensor or subsystem stopped agreeing, and when?\n\nHow to read it: A single hot row points to one diverging source. Many hot rows can mean real scene change, estimator issue, synchronization problem, or global telemetry issue.\n\nWhy it matters: Robotics engineers debug by source such as lidar, camera, IMU, wheel encoders, odometry, localization, controller, and actuator.\n\nNext action: If one row is hot, inspect that source. If many rows are hot, inspect estimator, clock sync, environment event, or mission transition.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (source, subsystem) (metricchrono_robot_source_disagreement_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\",comparison=~\"source_vs_source|sensor_vs_estimator\"})",
+          "legendFormat": "{{source}} {{subsystem}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Source Agreement Heatmap",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Which source is currently least trustworthy?\n\nHow to read it: Low score means the source has repeatedly disagreed, gone missing, or become stale. It is a triage hint, not a permanent calibration judgment.\n\nWhy it matters: Engineers need a prioritized sensor list during incidents.\n\nNext action: Inspect the lowest-trust source's driver status, timestamps, physical condition, and mounting.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "min by (source) (min_over_time(metricchrono_robot_source_reliability_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}[2m]))",
+          "legendFormat": "{{source}} reliability",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Source Reliability / Trust Score",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is the robot losing localization or just moving differently?\n\nHow to read it: Localization disagreement with stable actuator tracking points toward estimator or perception. Tracking deviation with stable localization points toward control or actuation.\n\nWhy it matters: This separates the robot not knowing where it is from the robot not executing what it wants.\n\nNext action: Inspect map, feature quality, lidar/camera health, IMU calibration, wheel slip, and covariance.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_localization_disagreement_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"sensor_vs_estimator\"}",
+          "legendFormat": "{{asset}} localization",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_odometry_disagreement_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"source_vs_source\"}",
+          "legendFormat": "{{asset}} odometry",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_imu_disagreement_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"source_vs_source\"}",
+          "legendFormat": "{{asset}} IMU",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Odometry / Localization / IMU Agreement",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Did the robot's perception input change even though the mission state did not?\n\nHow to read it: Rising perception change with normal motion can indicate occlusion, lighting change, dust, scene change, feature loss, or camera/lidar degradation.\n\nWhy it matters: Perception problems often present as downstream navigation or control anomalies.\n\nNext action: Inspect camera/lidar status, lighting, occlusion, lens or sensor cleanliness, and environment.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_perception_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"known_good_baseline\"}",
+          "legendFormat": "{{asset}} perception",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_feature_count_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"sensor_vs_estimator\"}",
+          "legendFormat": "{{asset}} feature count change",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_perception_confidence_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"sensor_vs_estimator\"}",
+          "legendFormat": "{{asset}} confidence change",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Perception Source Change",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Did the source actually publish on time?\n\nHow to read it: Freshness increasing means the source is stale. Missing and late counters rising mean data availability changed.\n\nWhy it matters: Robotics systems are sensitive to stale perception, stale transforms, and delayed actuator feedback.\n\nNext action: Inspect middleware, CPU, network, driver frequency, and timestamp handling.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_source_freshness_seconds{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} freshness",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_source_late_total{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} late",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_source_missing_total{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} missing",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Topic / Source Freshness",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is the controller asking for one thing while the robot does another?\n\nHow to read it: Divergence between commanded and actual velocity indicates tracking failure, slip, saturation, load, or controller instability.\n\nWhy it matters: This is the simplest control-language explanation of a behavior change.\n\nNext action: Inspect motor current, effort, wheel slip, actuator saturation, terrain, and safety limits.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_commanded_linear_velocity{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} commanded linear",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_actual_linear_velocity{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} actual linear",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_commanded_angular_velocity{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} commanded angular",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_actual_angular_velocity{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} actual angular",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_tracking_deviation_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"commanded_vs_actual\"}",
+          "legendFormat": "{{asset}} tracking",
+          "range": true,
+          "refId": "E"
+        }
+      ],
+      "title": "Commanded vs Actual Velocity",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is tracking error a one-off spike or a changed distribution?\n\nHow to read it: A shifted distribution means persistent behavior change. A single spike means a transient event.\n\nWhy it matters: Robotics engineers need to distinguish one bad moment from a new operating condition.\n\nNext action: If the distribution shifts, inspect calibration, controller parameters, payload, terrain, and hardware wear.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, sum by (le) (metricchrono_robot_tracking_error_distance_bucket{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",le=~\".*\"}))",
+          "legendFormat": "p50 tracking error",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (metricchrono_robot_tracking_error_distance_bucket{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",le=~\".*\"}))",
+          "legendFormat": "p95 tracking error",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Tracking Error Distribution",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Which actuator is working unusually hard?\n\nHow to read it: A single high actuator points to a local mechanical or electrical issue. Many high actuators point to load, terrain, payload, or global control compensation.\n\nWhy it matters: This moves investigation from robot weird to a specific wheel, joint, or lift motor.\n\nNext action: Inspect the named actuator, load path, mechanical resistance, current limits, temperature, and maintenance history.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_actuator_effort_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} effort",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_motor_current_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} current",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_motor_temperature_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}",
+          "legendFormat": "{{source}} temperature",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Actuator Effort By Joint / Wheel / Motor",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is power or thermal behavior contributing to the issue?\n\nHow to read it: Power or temperature change rising before motion deviation can indicate load, degradation, thermal throttling, or battery issue.\n\nWhy it matters: Power and thermal context explains many intermittent robotics failures.\n\nNext action: Inspect battery state, charger or dock, thermal limits, current draw, and duty cycle.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_battery_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} battery change",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_power_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} power change",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_thermal_change_score{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} thermal change",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_voltage{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} voltage",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_current{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} current",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_robot_temperature{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} temperature",
+          "range": true,
+          "refId": "F"
+        }
+      ],
+      "title": "Battery / Power / Thermal Context",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: What did the robot itself report?\n\nHow to read it: Rows summarize bounded diagnostic categories, not raw free-form messages.\n\nWhy it matters: The robot's own diagnostics may already identify the issue. Change metrics should support, not obscure, that signal.\n\nNext action: Use diagnostic category as the primary investigation path if it aligns with change score.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (asset, source, state) (max_over_time(metricchrono_robot_diagnostic_summary{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\",state=~\"sensor_stale|temperature_warning|actuator_limit|localization_warning\"}[2m])) > 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "{{source}} {{state}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Diagnostic Messages Summary",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true
+            },
+            "indexByName": {
+              "asset": 1,
+              "comparison": 5,
+              "next_dashboard": 6,
+              "rank": 0,
+              "reason": 4,
+              "severity": 8,
+              "source": 2,
+              "subsystem": 3,
+              "time_window": 7
+            },
+            "renameByName": {
+              "comparison": "reference",
+              "next_dashboard": "open",
+              "subsystem": "area",
+              "time_window": "window"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: What should I inspect next?\n\nHow to read it: Rows translate metrics into engineering next steps.\n\nWhy it matters: A solution recipe should reduce cognitive load.\n\nNext action: Follow the top suggested inspection, then open Robot Incident Replay around the listed window.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (rank, asset, subsystem, source, reason, next_dashboard, comparison) (max_over_time(metricchrono_robot_inspection_candidate{site=\"$site\",environment=\"$environment\",recipe=\"robotics-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",severity=~\"watch|investigate|incident_candidate\"}[2m])) > 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "{{asset}} {{subsystem}} {{source}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Suggested Next Inspection",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true
+            },
+            "indexByName": {
+              "asset": 1,
+              "comparison": 5,
+              "next_dashboard": 6,
+              "rank": 0,
+              "reason": 4,
+              "severity": 8,
+              "source": 2,
+              "subsystem": 3,
+              "time_window": 7
+            },
+            "renameByName": {
+              "comparison": "reference",
+              "next_dashboard": "open",
+              "subsystem": "area",
+              "time_window": "window"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [
+    "robotics-telemetry",
+    "source-agreement"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "name": "datasource",
+        "query": "prometheus",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "local-lab",
+          "value": "local-lab"
+        },
+        "name": "site",
+        "query": "local-lab",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "demo",
+          "value": "demo"
+        },
+        "name": "environment",
+        "query": "demo",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "fleet-a",
+          "value": "fleet-a"
+        },
+        "name": "asset_group",
+        "query": "fleet-a",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "robot-r2",
+          "value": "robot-r2"
+        },
+        "name": "asset",
+        "query": "robot-r2",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        },
+        "name": "source",
+        "query": ".*",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "known_good_baseline",
+          "value": "known_good_baseline"
+        },
+        "name": "comparison",
+        "query": "known_good_baseline",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        },
+        "name": "change_size",
+        "query": ".*",
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Robot Source Agreement",
+  "uid": "robot-source-agreement",
+  "version": 1
+}

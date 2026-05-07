@@ -1,0 +1,656 @@
+# HELP metricchrono_robot_mission_state One-hot robot mission state.
+# TYPE metricchrono_robot_mission_state gauge
+# HELP metricchrono_robot_safety_state One-hot robot safety state.
+# TYPE metricchrono_robot_safety_state gauge
+# HELP metricchrono_robot_diagnostic_state One-hot robot diagnostic state.
+# TYPE metricchrono_robot_diagnostic_state gauge
+# HELP metricchrono_robot_mission_state_code Compact robot mission state code for state timelines.
+# TYPE metricchrono_robot_mission_state_code gauge
+# HELP metricchrono_robot_safety_state_code Compact robot safety state code for state timelines.
+# TYPE metricchrono_robot_safety_state_code gauge
+# HELP metricchrono_robot_diagnostic_state_code Compact robot diagnostic state code for state timelines.
+# TYPE metricchrono_robot_diagnostic_state_code gauge
+# HELP metricchrono_robot_change_state 0 normal, 1 watch, 2 investigate, 3 incident candidate, 4 recovered.
+# TYPE metricchrono_robot_change_state gauge
+# HELP metricchrono_robot_overall_change_score Overall robot behavior change score.
+# TYPE metricchrono_robot_overall_change_score gauge
+# HELP metricchrono_robot_motion_change_score Motion-specific behavior change score.
+# TYPE metricchrono_robot_motion_change_score gauge
+# HELP metricchrono_robot_change_score_by_size Robot change score split by small, medium, and large movement.
+# TYPE metricchrono_robot_change_score_by_size gauge
+# HELP metricchrono_robot_tracking_deviation_score Commanded versus actual motion deviation score.
+# TYPE metricchrono_robot_tracking_deviation_score gauge
+# HELP metricchrono_robot_commanded_speed Commanded speed in meters per second.
+# TYPE metricchrono_robot_commanded_speed gauge
+# HELP metricchrono_robot_actual_speed Actual speed in meters per second.
+# TYPE metricchrono_robot_actual_speed gauge
+# HELP metricchrono_robot_commanded_linear_velocity Commanded linear velocity.
+# TYPE metricchrono_robot_commanded_linear_velocity gauge
+# HELP metricchrono_robot_actual_linear_velocity Actual linear velocity.
+# TYPE metricchrono_robot_actual_linear_velocity gauge
+# HELP metricchrono_robot_commanded_angular_velocity Commanded angular velocity.
+# TYPE metricchrono_robot_commanded_angular_velocity gauge
+# HELP metricchrono_robot_actual_angular_velocity Actual angular velocity.
+# TYPE metricchrono_robot_actual_angular_velocity gauge
+# HELP metricchrono_robot_commanded_velocity Commanded velocity for incident replay.
+# TYPE metricchrono_robot_commanded_velocity gauge
+# HELP metricchrono_robot_actual_velocity Actual velocity for incident replay.
+# TYPE metricchrono_robot_actual_velocity gauge
+# HELP metricchrono_robot_source_disagreement_score Source, sensor, or estimator disagreement score.
+# TYPE metricchrono_robot_source_disagreement_score gauge
+# HELP metricchrono_robot_source_reliability_score Source reliability score.
+# TYPE metricchrono_robot_source_reliability_score gauge
+# HELP metricchrono_robot_source_missing_total Missing source events.
+# TYPE metricchrono_robot_source_missing_total counter
+# HELP metricchrono_robot_source_late_total Late source events.
+# TYPE metricchrono_robot_source_late_total counter
+# HELP metricchrono_robot_topic_freshness_seconds Topic freshness age.
+# TYPE metricchrono_robot_topic_freshness_seconds gauge
+# HELP metricchrono_robot_source_freshness_seconds Source freshness age.
+# TYPE metricchrono_robot_source_freshness_seconds gauge
+# HELP metricchrono_robot_actuator_effort_change_score Actuator effort change score.
+# TYPE metricchrono_robot_actuator_effort_change_score gauge
+# HELP metricchrono_robot_motor_current_change_score Motor current change score.
+# TYPE metricchrono_robot_motor_current_change_score gauge
+# HELP metricchrono_robot_motor_temperature_change_score Motor temperature change score.
+# TYPE metricchrono_robot_motor_temperature_change_score gauge
+# HELP metricchrono_robot_localization_disagreement_score Localization disagreement score.
+# TYPE metricchrono_robot_localization_disagreement_score gauge
+# HELP metricchrono_robot_odometry_disagreement_score Odometry disagreement score.
+# TYPE metricchrono_robot_odometry_disagreement_score gauge
+# HELP metricchrono_robot_imu_disagreement_score IMU disagreement score.
+# TYPE metricchrono_robot_imu_disagreement_score gauge
+# HELP metricchrono_robot_perception_change_score Perception input change score.
+# TYPE metricchrono_robot_perception_change_score gauge
+# HELP metricchrono_robot_feature_count_change_score Perception feature count change score.
+# TYPE metricchrono_robot_feature_count_change_score gauge
+# HELP metricchrono_robot_perception_confidence_change_score Perception confidence change score.
+# TYPE metricchrono_robot_perception_confidence_change_score gauge
+# HELP metricchrono_robot_tracking_error_distance Tracking error distance distribution.
+# TYPE metricchrono_robot_tracking_error_distance histogram
+# HELP metricchrono_robot_battery_change_score Battery state change score.
+# TYPE metricchrono_robot_battery_change_score gauge
+# HELP metricchrono_robot_power_change_score Power state change score.
+# TYPE metricchrono_robot_power_change_score gauge
+# HELP metricchrono_robot_thermal_change_score Thermal state change score.
+# TYPE metricchrono_robot_thermal_change_score gauge
+# HELP metricchrono_robot_voltage Battery voltage.
+# TYPE metricchrono_robot_voltage gauge
+# HELP metricchrono_robot_current Electrical current.
+# TYPE metricchrono_robot_current gauge
+# HELP metricchrono_robot_temperature Robot temperature.
+# TYPE metricchrono_robot_temperature gauge
+# HELP metricchrono_robot_diagnostic_summary Bounded diagnostic category summary.
+# TYPE metricchrono_robot_diagnostic_summary gauge
+# HELP metricchrono_robot_inspection_candidate Ranked robot inspection candidate.
+# TYPE metricchrono_robot_inspection_candidate gauge
+# HELP metricchrono_robot_incident_window_state Incident replay window state.
+# TYPE metricchrono_robot_incident_window_state gauge
+# HELP metricchrono_robot_incident_window_state_code Compact incident replay window state code.
+# TYPE metricchrono_robot_incident_window_state_code gauge
+# HELP metricchrono_robot_first_change_offset_seconds Seconds between first meaningful change and main symptom.
+# TYPE metricchrono_robot_first_change_offset_seconds gauge
+# HELP metricchrono_robot_replay_artifact Suggested replay artifact row.
+# TYPE metricchrono_robot_replay_artifact gauge
+# HELP metricchrono_robot_recovery_state Recovery confirmation state.
+# TYPE metricchrono_robot_recovery_state gauge
+# HELP metricchrono_robot_scenario_phase One-hot local robotics scenario phase.
+# TYPE metricchrono_robot_scenario_phase gauge
+metricchrono_robot_scenario_phase{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="normal_navigation",site="local-lab"} 1
+metricchrono_robot_scenario_phase{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="harmless_small_jitter",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="perception_source_degradation",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="tracking_deviation",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="actuator_effort_thermal_current_change",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="incident_candidate",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="recovery",site="local-lab"} 0
+metricchrono_robot_mission_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="idle"} 0
+metricchrono_robot_mission_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="navigating"} 1
+metricchrono_robot_mission_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="docking"} 0
+metricchrono_robot_mission_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="manipulating"} 0
+metricchrono_robot_mission_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="paused"} 0
+metricchrono_robot_mission_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="fault"} 0
+metricchrono_robot_mission_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_mission_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="estop"} 0
+metricchrono_robot_mission_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="unknown"} 0
+metricchrono_robot_safety_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="fault"} 0
+metricchrono_robot_safety_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_safety_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="estop"} 0
+metricchrono_robot_safety_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="ok"} 1
+metricchrono_robot_safety_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="warn"} 0
+metricchrono_robot_safety_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="error"} 0
+metricchrono_robot_safety_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="stale"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="fault"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="estop"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="ok"} 1
+metricchrono_robot_diagnostic_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="warn"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="error"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="stale"} 0
+metricchrono_robot_mission_state_code{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1
+metricchrono_robot_safety_state_code{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_diagnostic_state_code{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_motion_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5.0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_commanded_speed{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_actual_speed{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_commanded_linear_velocity{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_actual_linear_velocity{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_commanded_angular_velocity{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.08
+metricchrono_robot_actual_angular_velocity{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.08
+metricchrono_robot_commanded_velocity{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_actual_velocity{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_battery_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_power_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_thermal_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_voltage{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 49.2
+metricchrono_robot_current{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 11
+metricchrono_robot_temperature{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 37
+metricchrono_robot_recovery_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovered"} 1
+metricchrono_robot_recovery_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="incomplete"} 0
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 94
+metricchrono_robot_source_missing_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0
+metricchrono_robot_source_late_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 94
+metricchrono_robot_source_missing_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0
+metricchrono_robot_source_late_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 94
+metricchrono_robot_source_missing_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0
+metricchrono_robot_source_late_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 94
+metricchrono_robot_source_missing_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0
+metricchrono_robot_source_late_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 94
+metricchrono_robot_source_missing_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0
+metricchrono_robot_source_late_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 94
+metricchrono_robot_source_missing_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0
+metricchrono_robot_source_late_total{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 3
+metricchrono_robot_localization_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_odometry_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 3
+metricchrono_robot_imu_disagreement_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_perception_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_feature_count_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_perception_confidence_change_score{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 3
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.02",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.05",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.1",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.2",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.5",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",le="1.0",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",le="+Inf",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_sum{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.41
+metricchrono_robot_tracking_error_distance_count{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_diagnostic_summary{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="sensor_stale"} 0
+metricchrono_robot_diagnostic_summary{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="temperature_warning"} 0
+metricchrono_robot_diagnostic_summary{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="actuator_limit"} 0
+metricchrono_robot_diagnostic_summary{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="localization_warning"} 0
+metricchrono_robot_inspection_candidate{asset="robot-r1",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="commanded_vs_actual",environment="demo",next_dashboard="Robot Incident Replay",rank="1",reason="tracking deviation",recipe="robotics-telemetry",severity="watch",site="local-lab",source="front_left_wheel",subsystem="motion"} 0
+metricchrono_robot_incident_window_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="pre_incident"} 1
+metricchrono_robot_incident_window_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="incident"} 0
+metricchrono_robot_incident_window_state{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_incident_window_state_code{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_first_change_offset_seconds{asset="robot-r1",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0
+metricchrono_robot_replay_artifact{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",reason="freshness then tracking",recipe="robotics-telemetry",severity="watch",site="local-lab",source="lidar",subsystem="perception",time_window="incident -30s to +60s"} 0
+metricchrono_robot_replay_artifact{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",reason="freshness then tracking",recipe="robotics-telemetry",severity="investigate",site="local-lab",source="lidar",subsystem="perception",time_window="incident -30s to +60s"} 0
+metricchrono_robot_replay_artifact{asset="robot-r1",asset_class="amr",asset_group="fleet-a",environment="demo",reason="freshness then tracking",recipe="robotics-telemetry",severity="incident_candidate",site="local-lab",source="lidar",subsystem="perception",time_window="incident -30s to +60s"} 0
+metricchrono_robot_scenario_phase{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="normal_navigation",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="harmless_small_jitter",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="perception_source_degradation",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="tracking_deviation",site="local-lab"} 1
+metricchrono_robot_scenario_phase{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="actuator_effort_thermal_current_change",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="incident_candidate",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="recovery",site="local-lab"} 0
+metricchrono_robot_mission_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="idle"} 0
+metricchrono_robot_mission_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="navigating"} 1
+metricchrono_robot_mission_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="docking"} 0
+metricchrono_robot_mission_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="manipulating"} 0
+metricchrono_robot_mission_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="paused"} 0
+metricchrono_robot_mission_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="fault"} 0
+metricchrono_robot_mission_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_mission_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="estop"} 0
+metricchrono_robot_mission_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="unknown"} 0
+metricchrono_robot_safety_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="fault"} 0
+metricchrono_robot_safety_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_safety_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="estop"} 0
+metricchrono_robot_safety_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="ok"} 0
+metricchrono_robot_safety_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="warn"} 1
+metricchrono_robot_safety_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="error"} 0
+metricchrono_robot_safety_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="stale"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="fault"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="estop"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="ok"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="warn"} 1
+metricchrono_robot_diagnostic_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="error"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="stale"} 0
+metricchrono_robot_mission_state_code{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1
+metricchrono_robot_safety_state_code{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1
+metricchrono_robot_diagnostic_state_code{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1
+metricchrono_robot_change_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_overall_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 58.0
+metricchrono_robot_motion_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 67.0
+metricchrono_robot_tracking_deviation_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 55.0
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 18
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 38
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 7
+metricchrono_robot_change_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_overall_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 58.0
+metricchrono_robot_motion_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 67.0
+metricchrono_robot_tracking_deviation_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 55.0
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 18
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 38
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 7
+metricchrono_robot_change_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_overall_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 48.0
+metricchrono_robot_motion_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 67.0
+metricchrono_robot_tracking_deviation_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 55.0
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 18
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 38
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 7
+metricchrono_robot_change_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_overall_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 58.0
+metricchrono_robot_motion_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 67.0
+metricchrono_robot_tracking_deviation_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 67.0
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 18
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 38
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 7
+metricchrono_robot_change_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_overall_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 58.0
+metricchrono_robot_motion_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 67.0
+metricchrono_robot_tracking_deviation_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 55.0
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 18
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 38
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 7
+metricchrono_robot_change_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_overall_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 58.0
+metricchrono_robot_motion_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 67.0
+metricchrono_robot_tracking_deviation_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 55.0
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 18
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 38
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 7
+metricchrono_robot_change_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_overall_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 58.0
+metricchrono_robot_motion_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 67.0
+metricchrono_robot_tracking_deviation_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 55.0
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 18
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 38
+metricchrono_robot_change_score_by_size{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 7
+metricchrono_robot_commanded_speed{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_actual_speed{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.69
+metricchrono_robot_commanded_linear_velocity{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_actual_linear_velocity{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.69
+metricchrono_robot_commanded_angular_velocity{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.08
+metricchrono_robot_actual_angular_velocity{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.22
+metricchrono_robot_commanded_velocity{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_actual_velocity{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.69
+metricchrono_robot_battery_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_power_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_thermal_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 9.0
+metricchrono_robot_voltage{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 47.8
+metricchrono_robot_current{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 24
+metricchrono_robot_temperature{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 54
+metricchrono_robot_recovery_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovered"} 0
+metricchrono_robot_recovery_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="incomplete"} 1
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 34.0
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 34.0
+metricchrono_robot_source_reliability_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 94
+metricchrono_robot_source_missing_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 1
+metricchrono_robot_source_late_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 2
+metricchrono_robot_topic_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0.7
+metricchrono_robot_source_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0.7
+metricchrono_robot_actuator_effort_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 38
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 94
+metricchrono_robot_source_missing_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0
+metricchrono_robot_source_late_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 94
+metricchrono_robot_source_missing_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0
+metricchrono_robot_source_late_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 94
+metricchrono_robot_source_missing_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0
+metricchrono_robot_source_late_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 94
+metricchrono_robot_source_missing_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0
+metricchrono_robot_source_late_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 94
+metricchrono_robot_source_missing_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0
+metricchrono_robot_source_late_total{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 24.0
+metricchrono_robot_motor_current_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 19.0
+metricchrono_robot_motor_temperature_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 4.0
+metricchrono_robot_localization_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 23.0
+metricchrono_robot_odometry_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 6.0
+metricchrono_robot_imu_disagreement_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_perception_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 28.0
+metricchrono_robot_feature_count_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 19.0
+metricchrono_robot_perception_confidence_change_score{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 14.0
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.02",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.05",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.1",recipe="robotics-telemetry",site="local-lab"} 3
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.2",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.5",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",le="1.0",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",le="+Inf",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_sum{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.67
+metricchrono_robot_tracking_error_distance_count{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_diagnostic_summary{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="sensor_stale"} 0
+metricchrono_robot_diagnostic_summary{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="temperature_warning"} 0
+metricchrono_robot_diagnostic_summary{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="actuator_limit"} 0
+metricchrono_robot_diagnostic_summary{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="localization_warning"} 1
+metricchrono_robot_inspection_candidate{asset="robot-r2",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="commanded_vs_actual",environment="demo",next_dashboard="Robot Incident Replay",rank="1",reason="tracking deviation",recipe="robotics-telemetry",severity="investigate",site="local-lab",source="front_left_wheel",subsystem="motion"} 1
+metricchrono_robot_incident_window_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="pre_incident"} 0
+metricchrono_robot_incident_window_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="incident"} 1
+metricchrono_robot_incident_window_state{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_incident_window_state_code{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1
+metricchrono_robot_first_change_offset_seconds{asset="robot-r2",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 12
+metricchrono_robot_replay_artifact{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",reason="freshness then tracking",recipe="robotics-telemetry",severity="watch",site="local-lab",source="lidar",subsystem="perception",time_window="incident -30s to +60s"} 0
+metricchrono_robot_replay_artifact{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",reason="freshness then tracking",recipe="robotics-telemetry",severity="investigate",site="local-lab",source="lidar",subsystem="perception",time_window="incident -30s to +60s"} 1
+metricchrono_robot_replay_artifact{asset="robot-r2",asset_class="amr",asset_group="fleet-a",environment="demo",reason="freshness then tracking",recipe="robotics-telemetry",severity="incident_candidate",site="local-lab",source="lidar",subsystem="perception",time_window="incident -30s to +60s"} 0
+metricchrono_robot_scenario_phase{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="normal_navigation",site="local-lab"} 1
+metricchrono_robot_scenario_phase{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="harmless_small_jitter",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="perception_source_degradation",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="tracking_deviation",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="actuator_effort_thermal_current_change",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="incident_candidate",site="local-lab"} 0
+metricchrono_robot_scenario_phase{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",scenario_phase="recovery",site="local-lab"} 0
+metricchrono_robot_mission_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="idle"} 0
+metricchrono_robot_mission_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="navigating"} 1
+metricchrono_robot_mission_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="docking"} 0
+metricchrono_robot_mission_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="manipulating"} 0
+metricchrono_robot_mission_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="paused"} 0
+metricchrono_robot_mission_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="fault"} 0
+metricchrono_robot_mission_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_mission_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="estop"} 0
+metricchrono_robot_mission_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="unknown"} 0
+metricchrono_robot_safety_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="fault"} 0
+metricchrono_robot_safety_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_safety_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="estop"} 0
+metricchrono_robot_safety_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="ok"} 1
+metricchrono_robot_safety_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="warn"} 0
+metricchrono_robot_safety_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="error"} 0
+metricchrono_robot_safety_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="stale"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="fault"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="estop"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="ok"} 1
+metricchrono_robot_diagnostic_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="warn"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="error"} 0
+metricchrono_robot_diagnostic_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="stale"} 0
+metricchrono_robot_mission_state_code{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1
+metricchrono_robot_safety_state_code{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_diagnostic_state_code{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="known_good_baseline",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="same_mission_phase",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_motion_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="last_window",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5.0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="commanded_vs_actual",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_overall_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 8.0
+metricchrono_robot_motion_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_deviation_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="small",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_change_score_by_size{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="large",comparison="peer_asset",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_commanded_speed{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_actual_speed{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_commanded_linear_velocity{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_actual_linear_velocity{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_commanded_angular_velocity{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.08
+metricchrono_robot_actual_angular_velocity{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.08
+metricchrono_robot_commanded_velocity{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_actual_velocity{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 1.05
+metricchrono_robot_battery_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_power_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_thermal_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_voltage{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 49.2
+metricchrono_robot_current{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 11
+metricchrono_robot_temperature{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 37
+metricchrono_robot_recovery_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovered"} 1
+metricchrono_robot_recovery_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="incomplete"} 0
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 94
+metricchrono_robot_source_missing_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0
+metricchrono_robot_source_late_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 94
+metricchrono_robot_source_missing_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0
+metricchrono_robot_source_late_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="camera",subsystem="perception"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 94
+metricchrono_robot_source_missing_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0
+metricchrono_robot_source_late_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="imu",subsystem="localization"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 94
+metricchrono_robot_source_missing_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0
+metricchrono_robot_source_late_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="wheel_encoders",subsystem="actuator"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 94
+metricchrono_robot_source_missing_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0
+metricchrono_robot_source_late_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="localization",subsystem="localization"} 3
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 4
+metricchrono_robot_source_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="source_vs_source",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 5
+metricchrono_robot_source_reliability_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 94
+metricchrono_robot_source_missing_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0
+metricchrono_robot_source_late_total{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0
+metricchrono_robot_topic_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0.08
+metricchrono_robot_source_freshness_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 0.08
+metricchrono_robot_actuator_effort_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 6
+metricchrono_robot_motor_current_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 5
+metricchrono_robot_motor_temperature_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="front_left_wheel",subsystem="actuator"} 3
+metricchrono_robot_localization_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_odometry_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 3
+metricchrono_robot_imu_disagreement_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_perception_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_feature_count_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_perception_confidence_change_score{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab"} 3
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.02",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.05",recipe="robotics-telemetry",site="local-lab"} 2
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.1",recipe="robotics-telemetry",site="local-lab"} 4
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.2",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",le="0.5",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",le="1.0",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_bucket{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",le="+Inf",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_tracking_error_distance_sum{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0.41
+metricchrono_robot_tracking_error_distance_count{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 5
+metricchrono_robot_diagnostic_summary{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="sensor_stale"} 0
+metricchrono_robot_diagnostic_summary{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="temperature_warning"} 0
+metricchrono_robot_diagnostic_summary{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="actuator_limit"} 0
+metricchrono_robot_diagnostic_summary{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",state="localization_warning"} 0
+metricchrono_robot_inspection_candidate{asset="robot-r3",asset_class="amr",asset_group="fleet-a",change_size="medium",comparison="commanded_vs_actual",environment="demo",next_dashboard="Robot Incident Replay",rank="1",reason="tracking deviation",recipe="robotics-telemetry",severity="watch",site="local-lab",source="front_left_wheel",subsystem="motion"} 0
+metricchrono_robot_incident_window_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="pre_incident"} 1
+metricchrono_robot_incident_window_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="incident"} 0
+metricchrono_robot_incident_window_state{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab",state="recovery"} 0
+metricchrono_robot_incident_window_state_code{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",recipe="robotics-telemetry",site="local-lab"} 0
+metricchrono_robot_first_change_offset_seconds{asset="robot-r3",asset_class="amr",asset_group="fleet-a",comparison="sensor_vs_estimator",environment="demo",recipe="robotics-telemetry",site="local-lab",source="lidar",subsystem="perception"} 0
+metricchrono_robot_replay_artifact{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",reason="freshness then tracking",recipe="robotics-telemetry",severity="watch",site="local-lab",source="lidar",subsystem="perception",time_window="incident -30s to +60s"} 0
+metricchrono_robot_replay_artifact{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",reason="freshness then tracking",recipe="robotics-telemetry",severity="investigate",site="local-lab",source="lidar",subsystem="perception",time_window="incident -30s to +60s"} 0
+metricchrono_robot_replay_artifact{asset="robot-r3",asset_class="amr",asset_group="fleet-a",environment="demo",reason="freshness then tracking",recipe="robotics-telemetry",severity="incident_candidate",site="local-lab",source="lidar",subsystem="perception",time_window="incident -30s to +60s"} 0

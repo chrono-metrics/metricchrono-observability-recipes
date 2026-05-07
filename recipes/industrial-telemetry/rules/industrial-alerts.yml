@@ -1,0 +1,131 @@
+groups:
+- name: industrial-telemetry
+  rules:
+  - alert: IndustrialProcessChanged
+    expr: metricchrono_industrial_process_change_score{comparison="known_good_baseline"} > 50
+    for: 2m
+    labels:
+      severity: warning
+      main_subsystem: "process"
+      comparison: "known_good_baseline"
+    annotations:
+      summary: "Industrial process changed"
+      description: "Station or line behavior moved outside known-good behavior. Inspect Industrial Line Overview."
+      asset_group: "{{ $labels.asset_group }}"
+      asset: "{{ $labels.asset }}"
+      main_subsystem: "{{ $labels.main_subsystem }}"
+      comparison: "{{ $labels.comparison }}"
+      suggested_dashboard: "Industrial Line Overview"
+      suggested_next_action: "Inspect the named subsystem/source, then open the suggested dashboard around the incident window."
+  - alert: IndustrialCycleDrift
+    expr: metricchrono_industrial_cycle_change_score > 55
+    for: 2m
+    labels:
+      severity: warning
+      main_subsystem: "cycle"
+      comparison: "current_vs_target"
+    annotations:
+      summary: "Industrial cycle drift"
+      description: "Station shows sustained cycle drift. Inspect cycle time, bottleneck, and station context."
+      asset_group: "{{ $labels.asset_group }}"
+      asset: "{{ $labels.asset }}"
+      main_subsystem: "{{ $labels.main_subsystem }}"
+      comparison: "{{ $labels.comparison }}"
+      suggested_dashboard: "Industrial Incident Replay"
+      suggested_next_action: "Inspect the named subsystem/source, then open the suggested dashboard around the incident window."
+  - alert: IndustrialSensorDisagreement
+    expr: metricchrono_industrial_sensor_disagreement_score{comparison="sensor_vs_sensor"} > 55
+    for: 2m
+    labels:
+      severity: warning
+      main_subsystem: "sensor"
+      comparison: "sensor_vs_sensor"
+    annotations:
+      summary: "Industrial sensor disagreement"
+      description: "A sensor or tag disagrees with peers or controller state. Inspect Machine / Process Agreement."
+      asset_group: "{{ $labels.asset_group }}"
+      asset: "{{ $labels.asset }}"
+      main_subsystem: "{{ $labels.main_subsystem }}"
+      comparison: "{{ $labels.comparison }}"
+      suggested_dashboard: "Machine / Process Agreement"
+      suggested_next_action: "Inspect the named subsystem/source, then open the suggested dashboard around the incident window."
+  - alert: IndustrialTagMissingOrLate
+    expr: increase(metricchrono_industrial_source_late_total[2m]) > 0 or increase(metricchrono_industrial_source_missing_total[2m]) > 0
+    for: 2m
+    labels:
+      severity: warning
+      main_subsystem: "telemetry"
+      comparison: "current_freshness_vs_expected"
+    annotations:
+      summary: "Industrial tag missing or late"
+      description: "Telemetry freshness degraded. Inspect controller, gateway, tag subscription, network, and exporter path."
+      asset_group: "{{ $labels.asset_group }}"
+      asset: "{{ $labels.asset }}"
+      main_subsystem: "{{ $labels.main_subsystem }}"
+      comparison: "{{ $labels.comparison }}"
+      suggested_dashboard: "Machine / Process Agreement"
+      suggested_next_action: "Inspect the named subsystem/source, then open the suggested dashboard around the incident window."
+  - alert: IndustrialPhysicalMachineChanged
+    expr: metricchrono_industrial_physical_machine_change_score > 55
+    for: 2m
+    labels:
+      severity: warning
+      main_subsystem: "physical_machine"
+      comparison: "known_good_baseline"
+    annotations:
+      summary: "Industrial physical machine changed"
+      description: "Vibration, current, thermal, pressure, or flow behavior changed. Inspect physical machine signals."
+      asset_group: "{{ $labels.asset_group }}"
+      asset: "{{ $labels.asset }}"
+      main_subsystem: "{{ $labels.main_subsystem }}"
+      comparison: "{{ $labels.comparison }}"
+      suggested_dashboard: "Machine / Process Agreement"
+      suggested_next_action: "Inspect the named subsystem/source, then open the suggested dashboard around the incident window."
+  - alert: IndustrialQualityImpact
+    expr: metricchrono_industrial_quality_change_score > 45
+    for: 2m
+    labels:
+      severity: warning
+      main_subsystem: "quality"
+      comparison: "post_incident_vs_pre_incident"
+    annotations:
+      summary: "Industrial quality impact"
+      description: "Quality proxy changed after process drift. Inspect quality and station signals."
+      asset_group: "{{ $labels.asset_group }}"
+      asset: "{{ $labels.asset }}"
+      main_subsystem: "{{ $labels.main_subsystem }}"
+      comparison: "{{ $labels.comparison }}"
+      suggested_dashboard: "Industrial Incident Replay"
+      suggested_next_action: "Inspect the named subsystem/source, then open the suggested dashboard around the incident window."
+  - alert: IndustrialIncidentCandidate
+    expr: metricchrono_industrial_inspection_candidate{severity="incident_candidate"} > 0
+    for: 2m
+    labels:
+      severity: warning
+      main_subsystem: "triage"
+      comparison: "station_vs_line"
+    annotations:
+      summary: "Industrial incident candidate"
+      description: "Top station or machine candidate requires replay. Open Industrial Incident Replay."
+      asset_group: "{{ $labels.asset_group }}"
+      asset: "{{ $labels.asset }}"
+      main_subsystem: "{{ $labels.main_subsystem }}"
+      comparison: "{{ $labels.comparison }}"
+      suggested_dashboard: "Industrial Incident Replay"
+      suggested_next_action: "Inspect the named subsystem/source, then open the suggested dashboard around the incident window."
+  - alert: IndustrialRecoveryIncomplete
+    expr: metricchrono_industrial_incident_window_state{state="ongoing"} > 0
+    for: 2m
+    labels:
+      severity: warning
+      main_subsystem: "recovery"
+      comparison: "post_incident_vs_pre_incident"
+    annotations:
+      summary: "Industrial recovery incomplete"
+      description: "Incident window remains ongoing. Continue station and quality investigation."
+      asset_group: "{{ $labels.asset_group }}"
+      asset: "{{ $labels.asset }}"
+      main_subsystem: "{{ $labels.main_subsystem }}"
+      comparison: "{{ $labels.comparison }}"
+      suggested_dashboard: "Industrial Incident Replay"
+      suggested_next_action: "Inspect the named subsystem/source, then open the suggested dashboard around the incident window."

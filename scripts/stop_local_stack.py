@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stop the detached local recipe stack started by start_local_stack.py."""
+"""Stop the detached MLOps recipe stack started by start_local_stack.py."""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ def main() -> int:
         return 0
     for path in sorted(pid_dir.glob("*.pid")):
         stop_pid(path)
-    print("Stopped local MetricChrono recipe stack.")
+    print("Stopped local MLOps recipe stack.")
     return 0
 
 

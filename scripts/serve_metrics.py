@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve the deterministic MetricChrono recipe as Prometheus text."""
+"""Serve the deterministic MLOps recipe as Prometheus text."""
 
 from __future__ import annotations
 

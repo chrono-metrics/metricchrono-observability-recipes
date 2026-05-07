@@ -1,0 +1,1082 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Which sensor, tag, or station stopped agreeing?\n\nHow to read it: A single hot sensor row points to a sensor or tag problem. A station-wide hot band points to machine or process change.\n\nWhy it matters: This prevents treating bad telemetry as machine drift.\n\nNext action: Inspect the hot sensor or tag first if isolated; inspect process variables if station-wide.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (source, subsystem) (metricchrono_industrial_sensor_disagreement_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\",comparison=~\"sensor_vs_sensor|sensor_vs_controller|station_vs_line\"})",
+          "legendFormat": "{{source}} {{subsystem}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Sensor Agreement Heatmap",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Which sensor or tag is least reliable right now?\n\nHow to read it: Low score means the source may be stale, missing, noisy, or inconsistent.\n\nWhy it matters: Industrial dashboards often contain stale tags that look like stable process values.\n\nNext action: Inspect tag mapping, controller update, network path, sensor wiring, or calibration.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "min by (source) (min_over_time(metricchrono_industrial_sensor_reliability_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"}[2m]))",
+          "legendFormat": "{{source}} reliability",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Sensor Reliability Score",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Did the data stream degrade?\n\nHow to read it: Missing or late tags rising during a process-change event may mean telemetry degraded rather than the machine changed.\n\nWhy it matters: Telemetry reliability is often the difference between a process incident and a data incident.\n\nNext action: Inspect controller connectivity, gateway, tag subscription, network, and historian or exporter path.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (source) (metricchrono_industrial_source_missing_total{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"})",
+          "legendFormat": "{{source}} missing",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (source) (metricchrono_industrial_source_late_total{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"})",
+          "legendFormat": "{{source}} late",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (source) (metricchrono_industrial_tag_freshness_seconds{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=~\"$source\"})",
+          "legendFormat": "{{source}} freshness",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Missing / Late Tags",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Did cycle behavior shift, or was there one bad cycle?\n\nHow to read it: A distribution shift indicates sustained process or cycle drift. A single tail event suggests a transient interruption.\n\nWhy it matters: Industrial engineers care about recurring cycle loss, not just isolated outliers.\n\nNext action: If the distribution shifts, inspect bottleneck, mechanical condition, process variable drift, and material flow.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, sum by (le) (metricchrono_industrial_cycle_time_seconds_bucket{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",le=~\".*\"}))",
+          "legendFormat": "p50 cycle time",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (metricchrono_industrial_cycle_time_seconds_bucket{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",le=~\".*\"}))",
+          "legendFormat": "p95 cycle time",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Cycle-Time Distribution",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is the machine physically behaving differently?\n\nHow to read it: Rising physical change indicates machine or process load changed even before quality or downtime changes.\n\nWhy it matters: This is the industrial engineer's early warning layer.\n\nNext action: Inspect load, friction, bearings, motor, cooling, pressure or flow path, lubrication, or process material.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_vibration_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} vibration",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_motor_current_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} current",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_temperature_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} temperature",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_pressure_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} pressure",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_flow_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} flow",
+          "range": true,
+          "refId": "E"
+        }
+      ],
+      "title": "Machine Physical Change",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Which process variable moved with the change score?\n\nHow to read it: If a process variable moves before the change score, it may be causal or upstream. If it moves after, it may be an effect.\n\nWhy it matters: Industrial engineers need to connect change detection to known process variables.\n\nNext action: Inspect the process variable that moves first.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_process_variable_value{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",source=\"torque\"}",
+          "legendFormat": "{{source}} value",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_process_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"known_good_baseline\"}",
+          "legendFormat": "{{asset}} process change",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_cycle_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"current_vs_target\"}",
+          "legendFormat": "{{asset}} cycle change",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Process Variable vs Change Score",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is this station uniquely abnormal or part of a line-wide shift?\n\nHow to read it: A station much higher than the line suggests local issue. Station and line rising together suggests material, schedule, changeover, or line-wide condition.\n\nWhy it matters: This points investigation to local maintenance or line/system conditions.\n\nNext action: Inspect local station if isolated; inspect material flow, line state, upstream and downstream if broad.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_station_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=~\"station_vs_line|peer_asset\"}",
+          "legendFormat": "{{asset}} station",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_line_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"station_vs_line\"}",
+          "legendFormat": "{{asset_group}} line",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Station vs Line Comparison",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Is the process change affecting output quality?\n\nHow to read it: If quality change rises after process change, the drift may be turning into scrap or rework risk.\n\nWhy it matters: This connects telemetry to production impact.\n\nNext action: Prioritize incidents with quality impact over isolated telemetry movement.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_process_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"known_good_baseline\"}",
+          "legendFormat": "{{asset}} process",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_quality_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=\"known_good_baseline\"}",
+          "legendFormat": "{{asset}} quality change",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_reject_rate{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} reject rate",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Quality Impact Correlation",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: Are we comparing the machine to the correct state?\n\nHow to read it: If machine state is changeover, the dashboard should compare against changeover behavior, not running behavior.\n\nWhy it matters: False positives during changeover destroy trust.\n\nNext action: If baseline is wrong, do not treat the change as an incident; fix baseline and state mapping.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* line$|.* cell$|.* machine$|.* line state$|.* machine state$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "running"
+                      },
+                      "1": {
+                        "color": "green",
+                        "text": "idle"
+                      },
+                      "2": {
+                        "color": "yellow",
+                        "text": "starved"
+                      },
+                      "3": {
+                        "color": "orange",
+                        "text": "blocked"
+                      },
+                      "4": {
+                        "color": "blue",
+                        "text": "changeover"
+                      },
+                      "5": {
+                        "color": "blue",
+                        "text": "maintenance"
+                      },
+                      "6": {
+                        "color": "red",
+                        "text": "fault"
+                      },
+                      "7": {
+                        "color": "blue",
+                        "text": "recovery"
+                      },
+                      "8": {
+                        "color": "orange",
+                        "text": "unknown"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".* incident window$"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "green",
+                        "text": "pre incident"
+                      },
+                      "1": {
+                        "color": "red",
+                        "text": "incident"
+                      },
+                      "2": {
+                        "color": "blue",
+                        "text": "recovery"
+                      },
+                      "3": {
+                        "color": "orange",
+                        "text": "ongoing"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_machine_state_code{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} machine state",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_line_state_code{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\"}",
+          "legendFormat": "{{asset}} line state",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_baseline_in_use{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=~\"same_machine_state|known_good_baseline\"}",
+          "legendFormat": "{{asset}} baseline {{comparison}}",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_industrial_process_change_score{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",comparison=~\"same_machine_state|known_good_baseline\"}",
+          "legendFormat": "{{asset}} process {{comparison}}",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Planned Changeover Guard",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: What did the machine or controller already report?\n\nHow to read it: Rows summarize bounded categories, not raw messages.\n\nWhy it matters: Existing controller diagnostics should remain primary when they are clear.\n\nNext action: Use diagnostics as primary explanation if aligned with process change.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (asset, subsystem, state) (max_over_time(metricchrono_industrial_diagnostic_summary{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",state=~\"sensor_stale|temperature_warning|motor_current_warning|cycle_timeout|quality_warning\"}[2m])) > 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "{{asset}} {{state}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Machine Diagnostics Summary",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true
+            },
+            "indexByName": {
+              "asset": 1,
+              "comparison": 5,
+              "next_dashboard": 6,
+              "rank": 0,
+              "reason": 4,
+              "severity": 8,
+              "source": 2,
+              "subsystem": 3,
+              "time_window": 7
+            },
+            "renameByName": {
+              "comparison": "reference",
+              "next_dashboard": "open",
+              "subsystem": "area",
+              "time_window": "window"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Question answered: What should I inspect next?\n\nHow to read it: Rows translate metrics into plant actions.\n\nWhy it matters: The recipe should reduce decision time.\n\nNext action: Follow the top row and inspect station, sensor, cycle, physical machine signal, or quality path.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (rank, asset, subsystem, source, reason, next_dashboard, comparison) (max_over_time(metricchrono_industrial_inspection_candidate{site=\"$site\",environment=\"$environment\",recipe=\"industrial-telemetry\",asset_group=~\"$asset_group\",asset=~\"$asset\",severity=~\"watch|investigate|incident_candidate\"}[2m])) > 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "{{asset}} {{subsystem}} {{source}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Suggested Next Inspection",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true
+            },
+            "indexByName": {
+              "asset": 1,
+              "comparison": 5,
+              "next_dashboard": 6,
+              "rank": 0,
+              "reason": 4,
+              "severity": 8,
+              "source": 2,
+              "subsystem": 3,
+              "time_window": 7
+            },
+            "renameByName": {
+              "comparison": "reference",
+              "next_dashboard": "open",
+              "subsystem": "area",
+              "time_window": "window"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [
+    "industrial-telemetry",
+    "machine-agreement"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "name": "datasource",
+        "query": "prometheus",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "local-lab",
+          "value": "local-lab"
+        },
+        "name": "site",
+        "query": "local-lab",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "demo",
+          "value": "demo"
+        },
+        "name": "environment",
+        "query": "demo",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "line-1",
+          "value": "line-1"
+        },
+        "name": "asset_group",
+        "query": "line-1",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "station-3",
+          "value": "station-3"
+        },
+        "name": "asset",
+        "query": "station-3",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        },
+        "name": "source",
+        "query": ".*",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "known_good_baseline",
+          "value": "known_good_baseline"
+        },
+        "name": "comparison",
+        "query": "known_good_baseline",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        },
+        "name": "change_size",
+        "query": ".*",
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Machine / Process Agreement",
+  "uid": "machine-process-agreement",
+  "version": 1
+}

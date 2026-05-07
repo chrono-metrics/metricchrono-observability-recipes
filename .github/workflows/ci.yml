@@ -25,20 +25,15 @@ jobs:
         run: npm ci
       - name: Install Python dependencies
         run: python3 -m pip install -r requirements.txt
-      - name: Validate generated recipe
-        run: python3 scripts/validate_recipe.py
+      - name: Validate recipe assets
+        run: npm run validate:recipes
       - name: Test adapter
-        run: |
-          python3 scripts/smoke_mlops_adapter.py
-          python3 scripts/smoke_alert_windows.py
-          python3 -m unittest discover -s tests
+        run: npm run mlops:test
       - name: Check Prometheus config and rules
-        run: |
-          promtool check config prometheus/prometheus.yml
-          promtool check rules rules/metricchrono_recipe_alerts.yml
+        run: npm run mlops:check:prometheus
       - name: Check Rust example
-        run: cargo check
+        run: npm run rust:check
       - name: Check Python package smoke
-        run: python3 examples/python/metricchrono_smoke.py
+        run: npm run mlops:smoke:python
       - name: Check JavaScript package smoke
-        run: npm run metricchrono:js
+        run: npm run mlops:smoke:js

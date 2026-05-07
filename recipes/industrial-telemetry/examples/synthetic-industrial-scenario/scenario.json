@@ -1,0 +1,70 @@
+{
+  "assets": [
+    "station-1",
+    "station-2",
+    "station-3"
+  ],
+  "default_run": "plays once and holds recovery unless --loop is passed",
+  "normal_peer_during_incident": "station-1",
+  "phase_metrics": [
+    {
+      "file": "phase-metrics/01-normal-running.prom",
+      "phase": "Normal running"
+    },
+    {
+      "file": "phase-metrics/02-planned-changeover.prom",
+      "phase": "Planned changeover or state transition"
+    },
+    {
+      "file": "phase-metrics/03-harmless-process-variation.prom",
+      "phase": "Harmless small process variation"
+    },
+    {
+      "file": "phase-metrics/04-sensor-tag-degradation.prom",
+      "phase": "Sensor/tag degradation"
+    },
+    {
+      "file": "phase-metrics/05-physical-machine-drift.prom",
+      "phase": "Physical machine drift"
+    },
+    {
+      "file": "phase-metrics/06-cycle-drift-bottleneck.prom",
+      "phase": "Cycle drift or bottleneck"
+    },
+    {
+      "file": "phase-metrics/07-quality-proxy-impact.prom",
+      "phase": "Quality proxy degradation or explicit no-quality-impact period"
+    },
+    {
+      "file": "phase-metrics/08-incident-candidate.prom",
+      "phase": "Incident candidate"
+    },
+    {
+      "file": "phase-metrics/09-recovery.prom",
+      "phase": "Recovery or incomplete recovery"
+    }
+  ],
+  "phases": [
+    "Normal running",
+    "Planned changeover or state transition",
+    "Harmless small process variation",
+    "Sensor/tag degradation",
+    "Physical machine drift",
+    "Cycle drift or bottleneck",
+    "Quality proxy degradation or explicit no-quality-impact period",
+    "Incident candidate",
+    "Recovery or incomplete recovery"
+  ],
+  "recipe": "industrial-telemetry",
+  "visible_behavior": {
+    "Cycle drift or bottleneck": "cycle time distribution shifts and station-3 ranks highest",
+    "Harmless small process variation": "small change rises only",
+    "Incident candidate": "top inspection table names station-3 and physical-machine reason",
+    "Normal running": "line overview normal, cycle near target",
+    "Physical machine drift": "vibration, current, and thermal scores rise",
+    "Planned changeover or state transition": "production state changes without incident when same-state comparison is used",
+    "Quality proxy degradation or explicit no-quality-impact period": "quality impact follows process drift",
+    "Recovery or incomplete recovery": "process, cycle, and source scores fall or incomplete recovery remains visible",
+    "Sensor/tag degradation": "vibration sensor freshness and disagreement rise"
+  }
+}
