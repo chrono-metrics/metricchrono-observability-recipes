@@ -1,0 +1,1031 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Rollout state",
+      "type": "state-timeline",
+      "description": "What this shows:\nStable, canary, shadow, paused, rollback, and complete state with active app/model/prompt/index/config versions.\n\nWhy you care:\nRelease state is the first fact needed for rollback decisions.\n\nHow to read it:\nCompare rollout phase with SLO, behavior, and dependency panels; any behavior or SLO issue must be interpreted against what is live.\n\nWhat to do next:\nInspect the canary user-impact and behavior difference panels next.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*state.*|.*current.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "Watch",
+                        "color": "yellow"
+                      },
+                      "2": {
+                        "text": "Incident",
+                        "color": "red"
+                      },
+                      "3": {
+                        "text": "Recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*hypothesis.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "infra",
+                        "color": "red"
+                      },
+                      "2": {
+                        "text": "capacity",
+                        "color": "orange"
+                      },
+                      "3": {
+                        "text": "dependency",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "deploy",
+                        "color": "yellow"
+                      },
+                      "5": {
+                        "text": "behavior",
+                        "color": "yellow"
+                      },
+                      "6": {
+                        "text": "retrieval",
+                        "color": "orange"
+                      },
+                      "7": {
+                        "text": "agent",
+                        "color": "orange"
+                      },
+                      "8": {
+                        "text": "mixed",
+                        "color": "red"
+                      },
+                      "9": {
+                        "text": "recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*rollout.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "stable",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "shadow",
+                        "color": "blue"
+                      },
+                      "2": {
+                        "text": "canary",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "paused",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "rollback",
+                        "color": "red"
+                      },
+                      "5": {
+                        "text": "complete",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*trust.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "trusted",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "stale_baseline",
+                        "color": "orange"
+                      },
+                      "2": {
+                        "text": "low_volume",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "missing_source",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (traffic_role) (metricchrono_sre_ai_rollout_state_code{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"})",
+          "legendFormat": "{{traffic_role}} rollout",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (app_version) (metricchrono_sre_ai_app_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",app_version=~\".*\"})",
+          "legendFormat": "app {{app_version}}",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (active_model_version) (metricchrono_sre_ai_model_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",active_model_version=~\".*\"})",
+          "legendFormat": "model {{active_model_version}}",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (prompt_version) (metricchrono_sre_ai_prompt_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",prompt_version=~\".*\"})",
+          "legendFormat": "prompt {{prompt_version}}",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (index_version) (metricchrono_sre_ai_index_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",index_version=~\".*\"})",
+          "legendFormat": "index {{index_version}}",
+          "refId": "E",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (config_version) (metricchrono_sre_ai_config_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",config_version=~\".*\"})",
+          "legendFormat": "config {{config_version}}",
+          "refId": "F",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "title": "Canary user impact",
+      "type": "timeseries",
+      "description": "What this shows:\nCanary versus stable error rate, p95 latency, and SLO burn.\n\nWhy you care:\nSREs prioritize user impact before behavior analysis.\n\nHow to read it:\nCompare canary to stable and canary to the SLO; if canary is worse on user-facing SLIs, pause or roll back before deeper behavior work.\n\nWhat to do next:\nIf user impact is present, use the fast-burn or latency runbook.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (traffic_role) (rate(metricchrono_sre_ai_errors_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"canary|stable\"}[2m]))",
+          "legendFormat": "{{traffic_role}} errors",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le,traffic_role) (rate(metricchrono_sre_ai_request_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"canary|stable\",outcome=\"success\"}[2m])))",
+          "legendFormat": "{{traffic_role}} p95",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_slo_burn_rate{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"canary|stable\",window=\"short\"}",
+          "legendFormat": "{{traffic_role}} short burn",
+          "refId": "C",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      }
+    },
+    {
+      "title": "Canary behavior difference",
+      "type": "timeseries",
+      "description": "What this shows:\nBehavior-change comparing canary to stable and previous version.\n\nWhy you care:\nAI releases can change behavior before classic service metrics fail.\n\nHow to read it:\nCompare canary against stable, previous version, and watch/incident bands; a high difference with normal SLIs means investigate before full rollout.\n\nWhat to do next:\nUse release-behavior-regression runbook if the difference persists.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_canary_behavior_difference_score{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=\"canary\"}",
+          "legendFormat": "canary vs stable",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_previous_version_behavior_change_score{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=\"canary\"}",
+          "legendFormat": "canary vs previous version",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "vector(50)",
+          "legendFormat": "watch band",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "vector(75)",
+          "legendFormat": "incident evidence band",
+          "refId": "D",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      }
+    },
+    {
+      "title": "What changed in the canary?",
+      "type": "bargauge",
+      "description": "What this shows:\nCanary input, embedding, output, retrieval, agent workflow, and source disagreement differences.\n\nWhy you care:\nThis points the rollout issue to the owning team.\n\nHow to read it:\nCompare canary components against stable and previous version; output high with input low points to model or prompt, retrieval high points to index or retriever, and agent high points to tools.\n\nWhat to do next:\nRoute to the owner of the highest canary component.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_behavior_component_score{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=\"canary\",component=~\".*\"}",
+          "legendFormat": "{{component}}",
+          "refId": "A",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      }
+    },
+    {
+      "title": "Dependency and cost difference",
+      "type": "timeseries",
+      "description": "What this shows:\nToken usage, provider duration, provider rate limits, provider errors, and cost proxy for canary versus stable.\n\nWhy you care:\nAI releases can regress cost and capacity even when quality is acceptable.\n\nHow to read it:\nCompare canary to stable and previous version; more tokens or slower provider calls may be a release regression.\n\nWhat to do next:\nPause rollout if dependency or cost regression is material.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (traffic_role) (rate(metricchrono_sre_ai_token_usage_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"canary|stable\"}[2m]))",
+          "legendFormat": "{{traffic_role}} tokens/sec",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le,traffic_role) (rate(metricchrono_sre_ai_provider_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"canary|stable\",provider=~\".*\"}[2m])))",
+          "legendFormat": "{{traffic_role}} provider p95",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (traffic_role) (rate(metricchrono_sre_ai_provider_rate_limits_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"canary|stable\"}[2m]))",
+          "legendFormat": "{{traffic_role}} rate limits",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (traffic_role) (rate(metricchrono_sre_ai_provider_errors_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"canary|stable\"}[2m]))",
+          "legendFormat": "{{traffic_role}} provider errors",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_cost_proxy{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"canary|stable\"}",
+          "legendFormat": "{{traffic_role}} cost proxy",
+          "refId": "E",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      }
+    },
+    {
+      "title": "Blast radius by workload",
+      "type": "table",
+      "description": "What this shows:\nWorkload, service, environment, model, version, traffic role, SLO state, behavior state, and quality proxy.\n\nWhy you care:\nScope determines whether to pause a canary or investigate a global issue.\n\nHow to read it:\nCompare canary versus stable and top affected workloads by severity; if only canary is affected, pause rollout.\n\nWhat to do next:\nUse the top affected workload to target mitigation.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_next_action_candidate{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",rank=~\".*\"}",
+          "legendFormat": "{{workload}} {{traffic_role}}",
+          "refId": "A",
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "__name__": true
+            },
+            "renameByName": {
+              "model_version": "model version",
+              "traffic_role": "traffic role",
+              "likely_cause": "likely cause",
+              "next_step": "next step",
+              "slo_state": "SLO state",
+              "behavior_state": "behavior state",
+              "runbook": "runbook"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Rollback evidence",
+      "type": "table",
+      "description": "What this shows:\nSignal, current value, comparator, severity, first seen, owner, and suggested action.\n\nWhy you care:\nRollback recommendations need evidence, not just a graph.\n\nHow to read it:\nCompare SLO burn, canary versus stable, previous-version behavior, quality proxy, and dependency health; rows should make the rollback argument explicit.\n\nWhat to do next:\nUse the suggested action and owner in the change-management workflow.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_rollback_evidence{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",signal=~\".*\"}",
+          "legendFormat": "{{signal}} {{severity}}",
+          "refId": "A",
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "__name__": true
+            },
+            "renameByName": {
+              "model_version": "model version",
+              "traffic_role": "traffic role",
+              "likely_cause": "likely cause",
+              "next_step": "next step",
+              "slo_state": "SLO state",
+              "behavior_state": "behavior state",
+              "runbook": "runbook"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Post-rollback recovery",
+      "type": "timeseries",
+      "description": "What this shows:\nActive version, SLO burn, latency, error rate, behavior-change, and quality proxy after rollback.\n\nWhy you care:\nSREs need verification, not just a rollback event.\n\nHow to read it:\nCompare pre-rollback to post-rollback; if service health recovers but behavior remains changed, rollback may have fixed infrastructure but not AI behavior.\n\nWhat to do next:\nKeep watching until all configured recovery conditions are below thresholds.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_model_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",active_model_version=~\".*\"}",
+          "legendFormat": "model {{active_model_version}} active",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_slo_burn_rate{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",window=\"short\"}",
+          "legendFormat": "{{traffic_role}} short burn",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(metricchrono_sre_ai_request_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",outcome=\"success\"}[2m])))",
+          "legendFormat": "success p95",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (service) (rate(metricchrono_sre_ai_errors_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}[2m]))",
+          "legendFormat": "error rate",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_behavior_change_score{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} behavior",
+          "refId": "E",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_quality_proxy{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} quality",
+          "refId": "F",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [
+    "sre-ai-services",
+    "release"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        }
+      },
+      {
+        "name": "service",
+        "type": "textbox",
+        "query": "checkout-ai",
+        "current": {
+          "text": "checkout-ai",
+          "value": "checkout-ai"
+        }
+      },
+      {
+        "name": "environment",
+        "type": "textbox",
+        "query": "demo",
+        "current": {
+          "text": "demo",
+          "value": "demo"
+        }
+      },
+      {
+        "name": "model",
+        "type": "textbox",
+        "query": "assist-ranker",
+        "current": {
+          "text": "assist-ranker",
+          "value": "assist-ranker"
+        }
+      },
+      {
+        "name": "model_version",
+        "type": "textbox",
+        "query": ".*",
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        }
+      },
+      {
+        "name": "workload",
+        "type": "textbox",
+        "query": "interactive_chat",
+        "current": {
+          "text": "interactive_chat",
+          "value": "interactive_chat"
+        }
+      },
+      {
+        "name": "stream",
+        "type": "textbox",
+        "query": "support.answers",
+        "current": {
+          "text": "support.answers",
+          "value": "support.answers"
+        }
+      },
+      {
+        "name": "traffic_role",
+        "type": "textbox",
+        "query": "stable|canary",
+        "current": {
+          "text": "stable|canary",
+          "value": "stable|canary"
+        }
+      },
+      {
+        "name": "comparison",
+        "type": "textbox",
+        "query": "known_good_baseline",
+        "current": {
+          "text": "known_good_baseline",
+          "value": "known_good_baseline"
+        }
+      },
+      {
+        "name": "change_size",
+        "type": "textbox",
+        "query": "small|medium|large",
+        "current": {
+          "text": "small|medium|large",
+          "value": "small|medium|large"
+        }
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "AI Release Guardrail",
+  "uid": "ai-release-guardrail",
+  "version": 1,
+  "refresh": "30s"
+}

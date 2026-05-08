@@ -1,0 +1,1587 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Incident hypothesis timeline",
+      "type": "state-timeline",
+      "description": "What this shows:\nThe incident class over time: normal, infra, capacity, dependency, deploy, behavior, retrieval, agent, mixed, or recovering.\n\nWhy you care:\nSREs route incidents by hypothesis, not by raw metric families.\n\nHow to read it:\nCompare golden signals, dependency health, deploy markers, behavior-change, and quality proxy; the state sequence should tell the incident story.\n\nWhat to do next:\nUse the next panel matching the active hypothesis.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "normal",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "infra",
+                  "color": "red"
+                },
+                "2": {
+                  "text": "capacity",
+                  "color": "orange"
+                },
+                "3": {
+                  "text": "dependency",
+                  "color": "orange"
+                },
+                "4": {
+                  "text": "deploy",
+                  "color": "yellow"
+                },
+                "5": {
+                  "text": "behavior",
+                  "color": "yellow"
+                },
+                "6": {
+                  "text": "retrieval",
+                  "color": "orange"
+                },
+                "7": {
+                  "text": "agent",
+                  "color": "orange"
+                },
+                "8": {
+                  "text": "mixed",
+                  "color": "red"
+                },
+                "9": {
+                  "text": "recovering",
+                  "color": "blue"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*state.*|.*current.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "Watch",
+                        "color": "yellow"
+                      },
+                      "2": {
+                        "text": "Incident",
+                        "color": "red"
+                      },
+                      "3": {
+                        "text": "Recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*hypothesis.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "infra",
+                        "color": "red"
+                      },
+                      "2": {
+                        "text": "capacity",
+                        "color": "orange"
+                      },
+                      "3": {
+                        "text": "dependency",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "deploy",
+                        "color": "yellow"
+                      },
+                      "5": {
+                        "text": "behavior",
+                        "color": "yellow"
+                      },
+                      "6": {
+                        "text": "retrieval",
+                        "color": "orange"
+                      },
+                      "7": {
+                        "text": "agent",
+                        "color": "orange"
+                      },
+                      "8": {
+                        "text": "mixed",
+                        "color": "red"
+                      },
+                      "9": {
+                        "text": "recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*rollout.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "stable",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "shadow",
+                        "color": "blue"
+                      },
+                      "2": {
+                        "text": "canary",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "paused",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "rollback",
+                        "color": "red"
+                      },
+                      "5": {
+                        "text": "complete",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*trust.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "trusted",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "stale_baseline",
+                        "color": "orange"
+                      },
+                      "2": {
+                        "text": "low_volume",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "missing_source",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (service, environment) (metricchrono_sre_ai_incident_hypothesis_code{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"})",
+          "legendFormat": "{{service}} hypothesis",
+          "refId": "A",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "title": "What is consuming the SLO?",
+      "type": "timeseries",
+      "description": "What this shows:\nSLO bad-event contribution by availability, latency, dependency, timeout, and configured quality-policy reasons.\n\nWhy you care:\nBurn rate without reason is hard to triage.\n\nHow to read it:\nCompare bad-event reasons to total request volume and burn rate; behavior-change is not counted as a bad event by default.\n\nWhat to do next:\nInvestigate the largest bad-event band first.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (reason) (rate(metricchrono_sre_ai_slo_bad_events_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",reason=~\".*\"}[2m]))",
+          "legendFormat": "{{reason}}",
+          "refId": "A",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      }
+    },
+    {
+      "title": "Where is latency coming from?",
+      "type": "timeseries",
+      "description": "What this shows:\nEnd-to-end latency decomposed into queue, provider, retrieval, tool-call, and response-streaming components.\n\nWhy you care:\nAI latency is usually hidden inside dependency, retrieval, queueing, or streaming paths.\n\nHow to read it:\nCompare each component to its known-good p95/p99; the component that rises first is the likely bottleneck.\n\nWhat to do next:\nOpen the runbook for the leading component and inspect saturation.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_latency_component_seconds{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",component=~\".*\"}",
+          "legendFormat": "{{component}}",
+          "refId": "A",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      }
+    },
+    {
+      "title": "Which error path is active?",
+      "type": "timeseries",
+      "description": "What this shows:\nApplication, provider, timeout, rate-limit, malformed input, policy, retrieval, and tool failures.\n\nWhy you care:\nThe error path determines the owner and first debugging step.\n\nHow to read it:\nCompare class rates to the baseline and SLO bad-event contribution; malformed input with behavior-change points to input shift, provider errors point to dependency.\n\nWhat to do next:\nUse the matching runbook for the dominant class.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (error_class) (rate(metricchrono_sre_ai_errors_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",error_class=~\".*\"}[2m]))",
+          "legendFormat": "{{error_class}}",
+          "refId": "A",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      }
+    },
+    {
+      "title": "What is saturated?",
+      "type": "timeseries",
+      "description": "What this shows:\nQueue, in-flight, concurrency, provider quota, token budget, CPU, and GPU memory saturation.\n\nWhy you care:\nSaturation often precedes latency and errors.\n\nHow to read it:\nCompare each resource to the capacity limit and warning threshold; the first resource to rise is the capacity lead.\n\nWhat to do next:\nMitigate the leading resource and verify burn recovery.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.6
+              },
+              {
+                "color": "orange",
+                "value": 0.8
+              },
+              {
+                "color": "red",
+                "value": 0.95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_saturation_ratio{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",resource=~\".*\"}",
+          "legendFormat": "{{resource}}",
+          "refId": "A",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      }
+    },
+    {
+      "title": "What AI behavior changed?",
+      "type": "bargauge",
+      "description": "What this shows:\nInput, embedding, output, retrieval, agent workflow, and source disagreement scores.\n\nWhy you care:\nThis translates AI behavior evidence into owner routing.\n\nHow to read it:\nCompare each component against the normal baseline; output high with input low suggests model or prompt, retrieval high suggests RAG or index, agent high suggests tool workflow.\n\nWhat to do next:\nRoute the investigation to the owner of the highest component.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_behavior_component_score{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",component=~\".*\",comparison=~\"$comparison\"}",
+          "legendFormat": "{{component}}",
+          "refId": "A",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      }
+    },
+    {
+      "title": "Is this small noise or major movement?",
+      "type": "timeseries",
+      "description": "What this shows:\nBehavior-change split into small, medium, and large movement.\n\nWhy you care:\nNot every behavior movement deserves the same response.\n\nHow to read it:\nCompare small, medium, and large movement; small-only movement is weak evidence, sustained large movement is strong evidence, and large plus quality or SLO impact can become incident-level.\n\nWhat to do next:\nIf large movement persists, inspect behavior components and release correlation.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (change_size) (metricchrono_sre_ai_change_score_by_size{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",change_size=~\"$change_size\"})",
+          "legendFormat": "{{change_size}}",
+          "refId": "A",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      }
+    },
+    {
+      "title": "What changed before the incident?",
+      "type": "state-timeline",
+      "description": "What this shows:\nRollout state plus active app and model versions for incident change correlation.\n\nWhy you care:\nRollback and canary decisions depend on recent change correlation.\n\nHow to read it:\nCompare current versus previous version and before versus after deploy windows; a rollout or version switch near impact routes the next check to the release owner.\n\nWhat to do next:\nOpen AI Release Guardrail for rollback evidence.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*state.*|.*current.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "Watch",
+                        "color": "yellow"
+                      },
+                      "2": {
+                        "text": "Incident",
+                        "color": "red"
+                      },
+                      "3": {
+                        "text": "Recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*hypothesis.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "infra",
+                        "color": "red"
+                      },
+                      "2": {
+                        "text": "capacity",
+                        "color": "orange"
+                      },
+                      "3": {
+                        "text": "dependency",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "deploy",
+                        "color": "yellow"
+                      },
+                      "5": {
+                        "text": "behavior",
+                        "color": "yellow"
+                      },
+                      "6": {
+                        "text": "retrieval",
+                        "color": "orange"
+                      },
+                      "7": {
+                        "text": "agent",
+                        "color": "orange"
+                      },
+                      "8": {
+                        "text": "mixed",
+                        "color": "red"
+                      },
+                      "9": {
+                        "text": "recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*rollout.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "stable",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "shadow",
+                        "color": "blue"
+                      },
+                      "2": {
+                        "text": "canary",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "paused",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "rollback",
+                        "color": "red"
+                      },
+                      "5": {
+                        "text": "complete",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*trust.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "trusted",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "stale_baseline",
+                        "color": "orange"
+                      },
+                      "2": {
+                        "text": "low_volume",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "missing_source",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (traffic_role) (metricchrono_sre_ai_rollout_state_code{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"})",
+          "legendFormat": "{{traffic_role}} rollout",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (app_version) (metricchrono_sre_ai_app_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",app_version=~\".*\"})",
+          "legendFormat": "app {{app_version}}",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (active_model_version) (metricchrono_sre_ai_model_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",active_model_version=~\".*\"})",
+          "legendFormat": "model {{active_model_version}}",
+          "refId": "C",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      }
+    },
+    {
+      "title": "Can I trust the behavior signal?",
+      "type": "timeseries",
+      "description": "What this shows:\nBaseline age, sample volume, sampled request rate, missing-source count, low-traffic flag, and trust state.\n\nWhy you care:\nSREs need confidence before acting on a nontraditional signal.\n\nHow to read it:\nCompare baseline age to refresh policy, request volume to the minimum-volume rule, and missing sources to zero; stale or low-volume states weaken behavior alerts.\n\nWhat to do next:\nUse the baseline-stale-low-volume runbook before escalating on behavior evidence.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*state.*|.*current.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "Watch",
+                        "color": "yellow"
+                      },
+                      "2": {
+                        "text": "Incident",
+                        "color": "red"
+                      },
+                      "3": {
+                        "text": "Recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*hypothesis.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "infra",
+                        "color": "red"
+                      },
+                      "2": {
+                        "text": "capacity",
+                        "color": "orange"
+                      },
+                      "3": {
+                        "text": "dependency",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "deploy",
+                        "color": "yellow"
+                      },
+                      "5": {
+                        "text": "behavior",
+                        "color": "yellow"
+                      },
+                      "6": {
+                        "text": "retrieval",
+                        "color": "orange"
+                      },
+                      "7": {
+                        "text": "agent",
+                        "color": "orange"
+                      },
+                      "8": {
+                        "text": "mixed",
+                        "color": "red"
+                      },
+                      "9": {
+                        "text": "recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*rollout.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "stable",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "shadow",
+                        "color": "blue"
+                      },
+                      "2": {
+                        "text": "canary",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "paused",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "rollback",
+                        "color": "red"
+                      },
+                      "5": {
+                        "text": "complete",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*trust.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "trusted",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "stale_baseline",
+                        "color": "orange"
+                      },
+                      "2": {
+                        "text": "low_volume",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "missing_source",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_baseline_age_seconds{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} baseline age",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_sample_volume{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} sample volume",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_sampled_request_rate{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} sampled RPS",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_missing_source_count{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} missing sources",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_low_traffic_flag{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} low traffic",
+          "refId": "E",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_baseline_trust_state_code{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} trust",
+          "refId": "F",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      }
+    },
+    {
+      "title": "Is user quality dropping too?",
+      "type": "timeseries",
+      "description": "What this shows:\nBehavior-change score beside delayed quality or business proxy.\n\nWhy you care:\nThis separates harmless behavior movement from harmful regression evidence.\n\nHow to read it:\nCompare behavior movement against quality proxy and configured quality threshold; behavior leading quality drop is early warning, while behavior plus quality drop is stronger incident evidence.\n\nWhat to do next:\nUse the behavior-change-quality-drop runbook if quality degradation appears.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_behavior_change_score{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} behavior",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_quality_proxy{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} quality proxy",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "vector(0.85)",
+          "legendFormat": "quality incident threshold",
+          "refId": "C",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      }
+    },
+    {
+      "title": "What should I inspect first?",
+      "type": "table",
+      "description": "What this shows:\nRanked stream, workload, model version, likely cause, current state, next step, and runbook.\n\nWhy you care:\nThe dashboard should reduce first-response time.\n\nHow to read it:\nCompare candidates by severity, burn, dependency degradation, deploy correlation, and behavior-change; start with the top row.\n\nWhat to do next:\nOpen the named runbook or follow the row's next step.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_inspection_candidate{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",rank=~\".*\"}",
+          "legendFormat": "{{rank}} {{likely_cause}}",
+          "refId": "A",
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "__name__": true
+            },
+            "renameByName": {
+              "model_version": "model version",
+              "traffic_role": "traffic role",
+              "likely_cause": "likely cause",
+              "next_step": "next step",
+              "slo_state": "SLO state",
+              "behavior_state": "behavior state",
+              "runbook": "runbook"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Has the service recovered?",
+      "type": "timeseries",
+      "description": "What this shows:\nBurn, latency, error rate, dependency health, behavior-change score, and quality proxy.\n\nWhy you care:\nSREs need exit criteria before closing or downgrading an incident.\n\nHow to read it:\nCompare all signals against recovery thresholds for a sustained window; recovery requires service-health recovery and behavior or quality stabilization when behavior was involved.\n\nWhat to do next:\nKeep the incident in Recovering until the configured recovery window passes.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_slo_burn_rate{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",window=\"short\"}",
+          "legendFormat": "{{traffic_role}} short burn",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(metricchrono_sre_ai_request_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",outcome=\"success\"}[2m])))",
+          "legendFormat": "success p95",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (service) (rate(metricchrono_sre_ai_errors_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}[2m]))",
+          "legendFormat": "error rate",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_dependency_health_score{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",dependency=~\".*\"}",
+          "legendFormat": "{{dependency}} health",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_behavior_change_score{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} behavior",
+          "refId": "E",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_quality_proxy{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} quality",
+          "refId": "F",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 48
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [
+    "sre-ai-services",
+    "triage"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        }
+      },
+      {
+        "name": "service",
+        "type": "textbox",
+        "query": "checkout-ai",
+        "current": {
+          "text": "checkout-ai",
+          "value": "checkout-ai"
+        }
+      },
+      {
+        "name": "environment",
+        "type": "textbox",
+        "query": "demo",
+        "current": {
+          "text": "demo",
+          "value": "demo"
+        }
+      },
+      {
+        "name": "model",
+        "type": "textbox",
+        "query": "assist-ranker",
+        "current": {
+          "text": "assist-ranker",
+          "value": "assist-ranker"
+        }
+      },
+      {
+        "name": "model_version",
+        "type": "textbox",
+        "query": ".*",
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        }
+      },
+      {
+        "name": "workload",
+        "type": "textbox",
+        "query": "interactive_chat",
+        "current": {
+          "text": "interactive_chat",
+          "value": "interactive_chat"
+        }
+      },
+      {
+        "name": "stream",
+        "type": "textbox",
+        "query": "support.answers",
+        "current": {
+          "text": "support.answers",
+          "value": "support.answers"
+        }
+      },
+      {
+        "name": "traffic_role",
+        "type": "textbox",
+        "query": "stable|canary",
+        "current": {
+          "text": "stable|canary",
+          "value": "stable|canary"
+        }
+      },
+      {
+        "name": "comparison",
+        "type": "textbox",
+        "query": "known_good_baseline",
+        "current": {
+          "text": "known_good_baseline",
+          "value": "known_good_baseline"
+        }
+      },
+      {
+        "name": "change_size",
+        "type": "textbox",
+        "query": "small|medium|large",
+        "current": {
+          "text": "small|medium|large",
+          "value": "small|medium|large"
+        }
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "AI Incident Triage",
+  "uid": "ai-incident-triage",
+  "version": 1,
+  "refresh": "30s"
+}

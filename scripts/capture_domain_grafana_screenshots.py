@@ -64,6 +64,61 @@ RECIPE_SPECS = {
     },
 }
 
+RECIPE_SPECS["sre"] = {
+    "label": "SRE AI Services",
+    "folder": "MetricChrono SRE AI Services Recipes",
+    "provider": "metricchrono-sre-ai-services-recipes",
+    "job": "metricchrono-sre-ai-services-recipe",
+    "scenario_paths": [
+        ROOT / "recipes/sre-ai-services/examples/synthetic-ai-service-scenario/scenario.json",
+    ],
+    "dashboard_dirs": [
+        ROOT / "recipes/sre-ai-services/grafana/dashboards",
+    ],
+    "screenshots": {
+        "AI Service On-Call Overview": ROOT / "recipes/sre-ai-services/screenshots/on-call-overview-normal.png",
+        "AI Incident Triage": ROOT / "recipes/sre-ai-services/screenshots/incident-triage-dependency-provider-issue.png",
+        "AI Release Guardrail": ROOT / "recipes/sre-ai-services/screenshots/release-guardrail-deploy-correlated-behavior-change.png",
+    },
+    "capture_plan": [
+        {
+            "title": "AI Service On-Call Overview",
+            "phase_index": 0,
+            "output": ROOT / "recipes/sre-ai-services/screenshots/on-call-overview-normal.png",
+        },
+        {
+            "title": "AI Service On-Call Overview",
+            "phase_index": 3,
+            "output": ROOT / "recipes/sre-ai-services/screenshots/on-call-overview-silent-behavior-change.png",
+        },
+        {
+            "title": "AI Service On-Call Overview",
+            "phase_index": 1,
+            "output": ROOT / "recipes/sre-ai-services/screenshots/on-call-overview-infra-capacity-incident.png",
+        },
+        {
+            "title": "AI Incident Triage",
+            "phase_index": 2,
+            "output": ROOT / "recipes/sre-ai-services/screenshots/incident-triage-dependency-provider-issue.png",
+        },
+        {
+            "title": "AI Incident Triage",
+            "phase_index": 5,
+            "output": ROOT / "recipes/sre-ai-services/screenshots/incident-triage-behavior-quality-drop.png",
+        },
+        {
+            "title": "AI Release Guardrail",
+            "phase_index": 4,
+            "output": ROOT / "recipes/sre-ai-services/screenshots/release-guardrail-deploy-correlated-behavior-change.png",
+        },
+        {
+            "title": "AI Release Guardrail",
+            "phase_index": 8,
+            "output": ROOT / "recipes/sre-ai-services/screenshots/release-guardrail-post-rollback-recovery.png",
+        },
+    ],
+}
+
 RECIPE_SPECS["telemetry"] = {
     "label": "Robotics + Industrial Telemetry",
     "folder": "MetricChrono Robotics / Industrial Recipes",
@@ -75,6 +130,12 @@ RECIPE_SPECS["telemetry"] = {
 }
 
 SUBSTITUTIONS = {
+    "$model_version": ".*",
+    "$traffic_role": "stable|canary",
+    "$service": "checkout-ai",
+    "$workload": ".*",
+    "$stream": "support.answers",
+    "$model": "assist-ranker",
     "$site": "local-lab",
     "$environment": "demo",
     "$asset_group": "fleet-a|line-1",
@@ -108,18 +169,25 @@ class DomainReplayState:
         self.started_at = time.monotonic()
         self.seconds_per_phase = seconds_per_phase
         self.loop = loop
+        self.fixed_phase_index: int | None = None
         self.streams = [load_phase_snapshots(path) for path in spec_for(recipe)["scenario_paths"]]
 
     def body(self) -> bytes:
         index = int((time.monotonic() - self.started_at) / self.seconds_per_phase)
         parts: list[str] = []
         for snapshots in self.streams:
-            phase_index = index % len(snapshots) if self.loop else min(index, len(snapshots) - 1)
+            if self.fixed_phase_index is not None:
+                phase_index = max(0, min(self.fixed_phase_index, len(snapshots) - 1))
+            else:
+                phase_index = index % len(snapshots) if self.loop else min(index, len(snapshots) - 1)
             parts.append(snapshots[phase_index])
         return ("\n".join(parts)).encode("utf-8")
 
     def replay_seconds(self) -> float:
         return max(len(stream) for stream in self.streams) * self.seconds_per_phase + 3.0
+
+    def set_phase(self, phase_index: int) -> None:
+        self.fixed_phase_index = phase_index
 
 
 def make_handler(replay: DomainReplayState) -> type[BaseHTTPRequestHandler]:
@@ -269,6 +337,26 @@ def capture(url: str, output: Path) -> None:
     )
 
 
+def capture_sre_story_screenshots(
+    replay: DomainReplayState,
+    prometheus_url: str,
+    grafana_url: str,
+    by_title: dict[str, Any],
+) -> None:
+    plan = spec_for("sre")["capture_plan"]
+    missing = sorted({item["title"] for item in plan} - set(by_title))
+    if missing:
+        raise RuntimeError(f"Grafana did not provision SRE dashboards: {missing}")
+    for item in plan:
+        replay.set_phase(item["phase_index"])
+        time.sleep(20)
+        validate_dashboard_data(prometheus_url, "sre")
+        title = item["title"]
+        output = item["output"]
+        url = f"{grafana_url}{by_title[title]['url']}?orgId=1&from=now-15s&to=now&kiosk"
+        capture(url, output)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--recipe", choices=sorted(RECIPE_SPECS), default="telemetry")
@@ -277,7 +365,9 @@ def main() -> int:
     metrics_port = free_port()
     prometheus_port = free_port()
     grafana_port = free_port()
-    replay = DomainReplayState(recipe=args.recipe, seconds_per_phase=2.0, loop=True)
+    replay = DomainReplayState(recipe=args.recipe, seconds_per_phase=2.0, loop=args.recipe != "sre")
+    if args.recipe == "sre":
+        replay.set_phase(0)
     metrics_server = ThreadingHTTPServer(("127.0.0.1", metrics_port), make_handler(replay))
     metrics_thread = Thread(target=metrics_server.serve_forever, daemon=True)
     metrics_thread.start()
@@ -296,10 +386,14 @@ def main() -> int:
             grafana_url = f"http://127.0.0.1:{grafana_port}"
             wait_for(f"{prometheus_url}/api/v1/status/runtimeinfo", timeout=30)
             wait_for(f"{grafana_url}/api/health", auth=True, timeout=45)
-            time.sleep(80)
+            time.sleep(30 if args.recipe == "sre" else 80)
             validate_dashboard_data(prometheus_url, args.recipe)
             search = http_json(f"{grafana_url}/api/search?{urllib.parse.urlencode({'query': ''})}", auth=True)
             by_title = {item["title"]: item for item in search if item.get("type") == "dash-db"}
+            if args.recipe == "sre":
+                capture_sre_story_screenshots(replay, prometheus_url, grafana_url, by_title)
+                print("Captured 7 real Grafana SRE dashboard screenshots.")
+                return 0
             screenshots = spec_for(args.recipe)["screenshots"]
             missing = sorted(set(screenshots) - set(by_title))
             if missing:

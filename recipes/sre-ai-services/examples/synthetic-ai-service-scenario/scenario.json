@@ -1,0 +1,71 @@
+{
+  "name": "Synthetic AI service reliability scenario",
+  "default_run": "The default run plays once and holds recovery. Use --loop only for repeating local demos.",
+  "phases": [
+    "Normal",
+    "Infrastructure / capacity issue",
+    "Dependency/provider issue",
+    "Silent AI-behavior change",
+    "Deploy-correlated behavior change",
+    "Behavior + quality drop",
+    "Stale baseline",
+    "Low traffic",
+    "Recovery"
+  ],
+  "phase_metrics": [
+    {
+      "name": "Normal",
+      "file": "phase-metrics/01-normal.prom",
+      "summary": "Traffic, latency, errors, saturation, dependencies, and behavior are normal.",
+      "expected": "Current state is Normal, burn is sustainable, behavior is low, and no default alerts fire."
+    },
+    {
+      "name": "Infrastructure / capacity issue",
+      "file": "phase-metrics/02-infra-capacity.prom",
+      "summary": "Latency and saturation rise, and behavior-change stays secondary.",
+      "expected": "Golden signals and burn show user impact; behavior panels do not claim AI behavior as primary cause."
+    },
+    {
+      "name": "Dependency/provider issue",
+      "file": "phase-metrics/03-dependency-provider.prom",
+      "summary": "Provider latency, provider errors, and rate limits rise before or alongside service impact.",
+      "expected": "Dependency panels route investigation to the provider/dependency runbook."
+    },
+    {
+      "name": "Silent AI-behavior change",
+      "file": "phase-metrics/04-silent-behavior-change.prom",
+      "summary": "Request rate, latency, and errors stay normal while behavior-change rises.",
+      "expected": "Behavior alert is Watch, not Page, and next action routes to AI/model investigation."
+    },
+    {
+      "name": "Deploy-correlated behavior change",
+      "file": "phase-metrics/05-deploy-correlated-behavior.prom",
+      "summary": "A model, prompt, index, config, or app version becomes active before behavior changes.",
+      "expected": "Release dashboard shows canary/stable difference and rollback evidence without paging solely on behavior."
+    },
+    {
+      "name": "Behavior + quality drop",
+      "file": "phase-metrics/06-behavior-quality-drop.prom",
+      "summary": "Behavior-change rises and the delayed quality or business proxy degrades.",
+      "expected": "Behavior plus quality evidence can become incident-level under configured policy."
+    },
+    {
+      "name": "Stale baseline",
+      "file": "phase-metrics/07-stale-baseline.prom",
+      "summary": "Behavior movement appears while the baseline is stale.",
+      "expected": "Baseline trust warns and behavior alerts are suppressed or downgraded."
+    },
+    {
+      "name": "Low traffic",
+      "file": "phase-metrics/08-low-traffic.prom",
+      "summary": "Behavior movement appears with too little traffic to trust the sample.",
+      "expected": "Low-volume state appears and behavior alerts are suppressed or downgraded."
+    },
+    {
+      "name": "Recovery",
+      "file": "phase-metrics/09-recovery.prom",
+      "summary": "Mitigation occurs and SLO burn, dependency health, and behavior evidence return toward normal.",
+      "expected": "Recovery panel confirms sustained service-health and behavior stabilization before closure."
+    }
+  ]
+}

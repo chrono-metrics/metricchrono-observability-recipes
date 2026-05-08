@@ -27,6 +27,13 @@
     "industrial:start": "python3 scripts/start_domain_stack.py --recipe industrial",
     "industrial:stop": "python3 scripts/stop_domain_stack.py --recipe industrial",
     "industrial:validate": "python3 scripts/validate_domain_recipes.py --recipe industrial",
+    "sre:generate": "python3 scripts/generate_sre_recipe.py",
+    "sre:capture": "python3 scripts/capture_domain_grafana_screenshots.py --recipe sre",
+    "sre:serve": "python3 scripts/serve_domain_metrics.py --recipe sre",
+    "sre:start": "python3 scripts/start_domain_stack.py --recipe sre",
+    "sre:stop": "python3 scripts/stop_domain_stack.py",
+    "sre:validate": "python3 scripts/validate_sre_recipe.py",
+    "sre:check:prometheus": "promtool check config recipes/sre-ai-services/prometheus/prometheus.yml && promtool check rules recipes/sre-ai-services/rules/sre-ai-service-alerts.yml",
     "telemetry:generate": "python3 scripts/generate_domain_recipes.py --recipe all",
     "telemetry:capture": "python3 scripts/capture_domain_grafana_screenshots.py --recipe telemetry",
     "telemetry:serve": "python3 scripts/serve_domain_metrics.py --recipe telemetry",
@@ -34,9 +41,9 @@
     "telemetry:stop": "python3 scripts/stop_domain_stack.py --recipe telemetry",
     "telemetry:validate": "python3 scripts/validate_domain_recipes.py --recipe telemetry",
     "rust:check": "cargo check",
-    "validate:recipes": "npm run mlops:validate && npm run telemetry:validate",
+    "validate:recipes": "npm run mlops:validate && npm run telemetry:validate && npm run sre:validate",
     "validate": "npm run validate:recipes && npm run mlops:test && npm run mlops:smoke:js",
-    "validate:ci": "npm run validate && npm run mlops:check:prometheus && npm run rust:check && npm run mlops:smoke:python"
+    "validate:ci": "npm run validate && npm run mlops:check:prometheus && npm run sre:check:prometheus && npm run rust:check && npm run mlops:smoke:python"
   },
   "dependencies": {
     "@metricchrono/core": "0.1.0"

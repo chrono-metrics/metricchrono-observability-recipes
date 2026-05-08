@@ -1,0 +1,1319 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Current incident state",
+      "type": "stat",
+      "description": "What this shows:\nOne operational state: Normal, Watch, Incident, or Recovering.\n\nWhy you care:\nThis is the first decision point for whether the on-call engineer acts now.\n\nHow to read it:\nCompare SLO burn, latency, errors, dependency health, deploy state, and behavior evidence; behavior-change alone can raise Watch but does not force Incident.\n\nWhat to do next:\nIf the state is Incident, open AI Incident Triage; if it is Watch, inspect the top next-action row.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Normal",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Watch",
+                  "color": "yellow"
+                },
+                "2": {
+                  "text": "Incident",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Recovering",
+                  "color": "blue"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*state.*|.*current.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "Watch",
+                        "color": "yellow"
+                      },
+                      "2": {
+                        "text": "Incident",
+                        "color": "red"
+                      },
+                      "3": {
+                        "text": "Recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*hypothesis.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "infra",
+                        "color": "red"
+                      },
+                      "2": {
+                        "text": "capacity",
+                        "color": "orange"
+                      },
+                      "3": {
+                        "text": "dependency",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "deploy",
+                        "color": "yellow"
+                      },
+                      "5": {
+                        "text": "behavior",
+                        "color": "yellow"
+                      },
+                      "6": {
+                        "text": "retrieval",
+                        "color": "orange"
+                      },
+                      "7": {
+                        "text": "agent",
+                        "color": "orange"
+                      },
+                      "8": {
+                        "text": "mixed",
+                        "color": "red"
+                      },
+                      "9": {
+                        "text": "recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*rollout.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "stable",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "shadow",
+                        "color": "blue"
+                      },
+                      "2": {
+                        "text": "canary",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "paused",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "rollback",
+                        "color": "red"
+                      },
+                      "5": {
+                        "text": "complete",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*trust.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "trusted",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "stale_baseline",
+                        "color": "orange"
+                      },
+                      "2": {
+                        "text": "low_volume",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "missing_source",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (service, environment) (metricchrono_sre_ai_current_state_code{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"})",
+          "legendFormat": "{{service}} current state",
+          "refId": "A",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "title": "Is this burning error budget?",
+      "type": "timeseries",
+      "description": "What this shows:\nShort-window and long-window SLO burn plus remaining budget.\n\nWhy you care:\nSREs page on user impact and error-budget risk, not on interesting behavior movement alone.\n\nHow to read it:\nCompare burn against 1x sustainable burn and fast/slow burn thresholds; burn above the fast threshold means page-worthy impact.\n\nWhat to do next:\nOpen the slow or fast burn runbook depending on which threshold is crossed.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "orange",
+                "value": 6
+              },
+              {
+                "color": "red",
+                "value": 14.4
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_slo_burn_rate{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",window=\"short\"}",
+          "legendFormat": "{{traffic_role}} short burn",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_slo_burn_rate{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",window=\"long\"}",
+          "legendFormat": "{{traffic_role}} long burn",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_error_budget_remaining_ratio{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} remaining budget",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "vector(1)",
+          "legendFormat": "1x sustainable burn",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "vector(14.4)",
+          "legendFormat": "fast-burn page threshold",
+          "refId": "E",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 6,
+        "w": 16,
+        "x": 8,
+        "y": 0
+      }
+    },
+    {
+      "title": "Traffic and saturation",
+      "type": "timeseries",
+      "description": "What this shows:\nRequest rate beside in-flight requests, queue depth, concurrency, and token budget usage.\n\nWhy you care:\nThis separates overload or traffic loss from an AI-behavior-only issue.\n\nHow to read it:\nCompare current traffic to the known-good band and saturation to capacity limits; rising traffic plus queue and latency points to capacity.\n\nWhat to do next:\nIf saturation leads latency, use the latency-degraded runbook and inspect capacity controls.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.6
+              },
+              {
+                "color": "orange",
+                "value": 0.8
+              },
+              {
+                "color": "red",
+                "value": 0.95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (service) (rate(metricchrono_sre_ai_requests_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}[2m]))",
+          "legendFormat": "requests/sec",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_inflight_requests{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} in flight",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_queue_depth{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} queue",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_concurrency_usage_ratio{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} concurrency usage",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_token_budget_usage_ratio{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} token budget usage",
+          "refId": "E",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      }
+    },
+    {
+      "title": "Latency: successful vs failed requests",
+      "type": "timeseries",
+      "description": "What this shows:\nSuccessful-request p50, p95, and p99 latency beside failed-request latency.\n\nWhy you care:\nMixing successful and failed latency can hide slow successful requests or fast failures.\n\nHow to read it:\nCompare successful-request latency to the latency SLO and known-good p95/p99 bands; slow failures plus queue growth are worse than fast failures.\n\nWhat to do next:\nIf latency is high, open the triage latency decomposition and latency-degraded runbook.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(metricchrono_sre_ai_request_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",outcome=\"success\"}[2m])))",
+          "legendFormat": "success p50",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(metricchrono_sre_ai_request_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",outcome=\"success\"}[2m])))",
+          "legendFormat": "success p95",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(metricchrono_sre_ai_request_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",outcome=\"success\"}[2m])))",
+          "legendFormat": "success p99",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(metricchrono_sre_ai_request_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",outcome=\"failed\"}[2m])))",
+          "legendFormat": "failed p95",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "vector(1.0)",
+          "legendFormat": "latency SLO target",
+          "refId": "E",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      }
+    },
+    {
+      "title": "What kind of errors are users seeing?",
+      "type": "timeseries",
+      "description": "What this shows:\nError rate split by application, provider, timeout, rate limit, policy, retrieval, tool, and unknown classes.\n\nWhy you care:\nError class is routing information for the on-call engineer.\n\nHow to read it:\nCompare each class to its normal baseline; provider and rate-limit errors route to dependency investigation, while policy blocks may indicate prompt or input shift.\n\nWhat to do next:\nOpen the error decomposition panel and the matching runbook for the dominant error class.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (error_class) (rate(metricchrono_sre_ai_errors_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",error_class=~\".*\"}[2m]))",
+          "legendFormat": "{{error_class}}",
+          "refId": "A",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      }
+    },
+    {
+      "title": "Is AI behavior changing while service health is normal?",
+      "type": "timeseries",
+      "description": "What this shows:\nBehavior-change score beside error rate, p95 latency, and quality proxy.\n\nWhy you care:\nThis catches silent AI behavior movement when golden signals are green.\n\nHow to read it:\nCompare behavior-change to the normal baseline while checking latency, errors, and quality; behavior rising with normal health routes to AI/model owners, not infrastructure restarts.\n\nWhat to do next:\nOpen AI Incident Triage and use the behavior-changed runbook.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_behavior_change_score{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",comparison=~\"$comparison\"}",
+          "legendFormat": "{{traffic_role}} behavior",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (service) (rate(metricchrono_sre_ai_errors_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}[2m]))",
+          "legendFormat": "error rate",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(metricchrono_sre_ai_request_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",outcome=\"success\"}[2m])))",
+          "legendFormat": "success p95",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_quality_proxy{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\"}",
+          "legendFormat": "{{traffic_role}} quality proxy",
+          "refId": "D",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      }
+    },
+    {
+      "title": "Did this start after a deploy?",
+      "type": "state-timeline",
+      "description": "What this shows:\nActive app, model, prompt, index, and config versions for deploy correlation.\n\nWhy you care:\nRecent changes are often the fastest path to mitigation or rollback.\n\nHow to read it:\nCompare before and after deploy windows; if behavior jumps after a version becomes active, inspect rollout, prompt, model, index, or config.\n\nWhat to do next:\nOpen AI Release Guardrail for canary, stable, previous-version, and rollback evidence.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*state.*|.*current.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "Watch",
+                        "color": "yellow"
+                      },
+                      "2": {
+                        "text": "Incident",
+                        "color": "red"
+                      },
+                      "3": {
+                        "text": "Recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*hypothesis.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "normal",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "infra",
+                        "color": "red"
+                      },
+                      "2": {
+                        "text": "capacity",
+                        "color": "orange"
+                      },
+                      "3": {
+                        "text": "dependency",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "deploy",
+                        "color": "yellow"
+                      },
+                      "5": {
+                        "text": "behavior",
+                        "color": "yellow"
+                      },
+                      "6": {
+                        "text": "retrieval",
+                        "color": "orange"
+                      },
+                      "7": {
+                        "text": "agent",
+                        "color": "orange"
+                      },
+                      "8": {
+                        "text": "mixed",
+                        "color": "red"
+                      },
+                      "9": {
+                        "text": "recovering",
+                        "color": "blue"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*rollout.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "stable",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "shadow",
+                        "color": "blue"
+                      },
+                      "2": {
+                        "text": "canary",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "paused",
+                        "color": "orange"
+                      },
+                      "4": {
+                        "text": "rollback",
+                        "color": "red"
+                      },
+                      "5": {
+                        "text": "complete",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*trust.*"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "trusted",
+                        "color": "green"
+                      },
+                      "1": {
+                        "text": "stale_baseline",
+                        "color": "orange"
+                      },
+                      "2": {
+                        "text": "low_volume",
+                        "color": "yellow"
+                      },
+                      "3": {
+                        "text": "missing_source",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (app_version) (metricchrono_sre_ai_app_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",app_version=~\".*\"})",
+          "legendFormat": "app {{app_version}}",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (active_model_version) (metricchrono_sre_ai_model_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",active_model_version=~\".*\"})",
+          "legendFormat": "model {{active_model_version}}",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (prompt_version) (metricchrono_sre_ai_prompt_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",prompt_version=~\".*\"})",
+          "legendFormat": "prompt {{prompt_version}}",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (index_version) (metricchrono_sre_ai_index_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",index_version=~\".*\"})",
+          "legendFormat": "index {{index_version}}",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (config_version) (metricchrono_sre_ai_config_version_active{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",config_version=~\".*\"})",
+          "legendFormat": "config {{config_version}}",
+          "refId": "E",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 22
+      }
+    },
+    {
+      "title": "Are AI dependencies healthy?",
+      "type": "timeseries",
+      "description": "What this shows:\nProvider latency, provider errors, rate limits, token usage, retrieval latency, tool latency, and cache hit ratio.\n\nWhy you care:\nAI incidents often originate in hosted models, vector stores, retrievers, tools, or cache paths.\n\nHow to read it:\nCompare dependency p95 against service p95 and provider errors against local errors; dependency degradation leading service degradation routes away from app debugging.\n\nWhat to do next:\nUse the provider dependency runbook if provider or retrieval signals lead the incident.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(metricchrono_sre_ai_provider_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",provider=~\".*\"}[2m])))",
+          "legendFormat": "provider p95",
+          "refId": "A",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (provider) (rate(metricchrono_sre_ai_provider_errors_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",provider=~\".*\"}[2m]))",
+          "legendFormat": "{{provider}} errors",
+          "refId": "B",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (provider) (rate(metricchrono_sre_ai_provider_rate_limits_total{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",provider=~\".*\"}[2m]))",
+          "legendFormat": "{{provider}} rate limits",
+          "refId": "C",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(metricchrono_sre_ai_retrieval_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",dependency=\"retriever\"}[2m])))",
+          "legendFormat": "retrieval p95",
+          "refId": "D",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(metricchrono_sre_ai_tool_call_duration_seconds_bucket{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",dependency=\"tool_api\"}[2m])))",
+          "legendFormat": "tool p95",
+          "refId": "E",
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_cache_hit_ratio{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",dependency=\"cache\"}",
+          "legendFormat": "cache hit ratio",
+          "refId": "F",
+          "range": true
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 22
+      }
+    },
+    {
+      "title": "Blast radius and next action",
+      "type": "table",
+      "description": "What this shows:\nRanked service, environment, model, workload, stream, SLO state, behavior state, likely cause, next step, and runbook.\n\nWhy you care:\nThis turns the overview into a runbook entry point.\n\nHow to read it:\nCompare rows by severity, burn, dependency health, behavior-change, and deploy correlation; the top row is the best next place to inspect.\n\nWhat to do next:\nFollow the top row and open the linked runbook or dashboard.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "metricchrono_sre_ai_next_action_candidate{service=~\"$service\",environment=~\"$environment\",model=~\"$model\",model_version=~\"$model_version\",workload=~\"$workload\",stream=~\"$stream\",traffic_role=~\"$traffic_role\",rank=~\".*\"}",
+          "legendFormat": "{{rank}} {{likely_cause}}",
+          "refId": "A",
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 30
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "__name__": true
+            },
+            "renameByName": {
+              "model_version": "model version",
+              "traffic_role": "traffic role",
+              "likely_cause": "likely cause",
+              "next_step": "next step",
+              "slo_state": "SLO state",
+              "behavior_state": "behavior state",
+              "runbook": "runbook"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [
+    "sre-ai-services",
+    "overview"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        }
+      },
+      {
+        "name": "service",
+        "type": "textbox",
+        "query": "checkout-ai",
+        "current": {
+          "text": "checkout-ai",
+          "value": "checkout-ai"
+        }
+      },
+      {
+        "name": "environment",
+        "type": "textbox",
+        "query": "demo",
+        "current": {
+          "text": "demo",
+          "value": "demo"
+        }
+      },
+      {
+        "name": "model",
+        "type": "textbox",
+        "query": "assist-ranker",
+        "current": {
+          "text": "assist-ranker",
+          "value": "assist-ranker"
+        }
+      },
+      {
+        "name": "model_version",
+        "type": "textbox",
+        "query": ".*",
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        }
+      },
+      {
+        "name": "workload",
+        "type": "textbox",
+        "query": "interactive_chat",
+        "current": {
+          "text": "interactive_chat",
+          "value": "interactive_chat"
+        }
+      },
+      {
+        "name": "stream",
+        "type": "textbox",
+        "query": "support.answers",
+        "current": {
+          "text": "support.answers",
+          "value": "support.answers"
+        }
+      },
+      {
+        "name": "traffic_role",
+        "type": "textbox",
+        "query": "stable|canary",
+        "current": {
+          "text": "stable|canary",
+          "value": "stable|canary"
+        }
+      },
+      {
+        "name": "comparison",
+        "type": "textbox",
+        "query": "known_good_baseline",
+        "current": {
+          "text": "known_good_baseline",
+          "value": "known_good_baseline"
+        }
+      },
+      {
+        "name": "change_size",
+        "type": "textbox",
+        "query": "small|medium|large",
+        "current": {
+          "text": "small|medium|large",
+          "value": "small|medium|large"
+        }
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "AI Service On-Call Overview",
+  "uid": "ai-service-on-call-overview",
+  "version": 1,
+  "refresh": "30s"
+}

@@ -7,21 +7,23 @@ This repository contains publishable MetricChrono recipe packs. Each recipe live
 - [MLOps / AI Observability](recipes/mlops/README.md)
 - [Robotics Telemetry](recipes/robotics-telemetry/README.md)
 - [Industrial Telemetry](recipes/industrial-telemetry/README.md)
+- [SRE AI Services](recipes/sre-ai-services/README.md)
 
-Planned recipe families are reserved under `recipes/sre-ai-services/` and `recipes/agent-observability/`.
+Planned recipe families are reserved under `recipes/agent-observability/`.
 
 ## Local Grafana Servers
 
-The local demo uses independently runnable recipe servers. Shared Grafana/Prometheus plumbing is used where it helps, but robotics and industrial remain separate recipe packs with separate dashboards, docs, screenshots, alerts, examples, fixtures, and language.
+The local demo uses independently runnable recipe servers. Shared Grafana/Prometheus plumbing is used where it helps, but robotics, industrial, and SRE AI services remain separate recipe packs with separate dashboards, docs, screenshots, alerts, examples, fixtures, and language.
 
 | Recipe pack | Make command | npm equivalent | Default Grafana URL | Grafana folder |
 | --- | --- | --- | --- | --- |
 | MLOps / AI observability | `make mlops` | `npm run mlops:start` | `http://localhost:3000` | `MetricChrono MLOps Recipes` |
 | Robotics telemetry | `make robotics` | `npm run robotics:start` | `http://localhost:3001` | `MetricChrono Robotics Recipes` |
 | Industrial telemetry | `make industrial` | `npm run industrial:start` | `http://localhost:3001` | `MetricChrono Industrial Recipes` |
+| SRE AI services | `make sre` | `npm run sre:start` | `http://localhost:3001` | `MetricChrono SRE AI Services Recipes` |
 | Robotics + industrial together | `make telemetry` | `npm run telemetry:start` | `http://localhost:3001` | `MetricChrono Robotics / Industrial Recipes` |
 
-The telemetry-family commands pick the next free Grafana port if `3001` is occupied. Starting `robotics`, `industrial`, or `telemetry` replaces the previous telemetry-family local stack while leaving the MLOps stack alone. Each start command prints the actual Grafana, Prometheus, metrics, folder, and dashboard URLs.
+The domain-family commands pick the next free Grafana port if `3001` is occupied. Starting `robotics`, `industrial`, `sre`, or `telemetry` replaces the previous domain-family local stack while leaving the MLOps stack alone. Each start command prints the actual Grafana, Prometheus, metrics, folder, and dashboard URLs.
 
 Stop local servers:
 
@@ -68,4 +70,12 @@ Regenerate and capture the shared telemetry view:
 npm run telemetry:generate
 npm run telemetry:capture
 npm run telemetry:validate
+```
+
+Regenerate the SRE AI services recipe pack:
+
+```bash
+npm run sre:generate
+npm run sre:capture
+npm run sre:validate
 ```

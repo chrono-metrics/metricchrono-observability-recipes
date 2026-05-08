@@ -6,7 +6,7 @@ Published recipe packs:
 - `mlops`
 - `robotics-telemetry`
 - `industrial-telemetry`
+- `sre-ai-services`
 
 Reserved recipe families:
-- `sre-ai-services`
 - `agent-observability`

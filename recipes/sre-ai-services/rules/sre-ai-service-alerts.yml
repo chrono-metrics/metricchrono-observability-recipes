@@ -1,0 +1,99 @@
+groups:
+- name: sre-ai-services
+  rules:
+  - alert: AIServiceFastBurn
+    expr: max by (service, environment, model, workload) (metricchrono_sre_ai_slo_burn_rate{window="short"} > 14.4)
+    for: 2m
+    labels:
+      severity: page
+      page: "yes"
+    annotations:
+      summary: "AI service is burning error budget quickly"
+      description: "User-impacting SLO burn is above the fast-burn threshold. Treat this as a service incident."
+      runbook_url: "runbooks/ai-service-fast-burn.md"
+      suggested_dashboard: "AI Service On-Call Overview"
+      suggested_next_action: "Confirm user impact, identify the largest bad-event reason, and mitigate the leading golden-signal failure."
+  - alert: AIServiceSlowBurn
+    expr: max by (service, environment, model, workload) (metricchrono_sre_ai_slo_burn_rate{window="long"} > 1)
+    for: 15m
+    labels:
+      severity: watch
+      page: "no"
+    annotations:
+      summary: "AI service has sustained error-budget burn"
+      description: "Long-window burn is above sustainable rate. Create or update an incident ticket unless policy says to page."
+      runbook_url: "runbooks/ai-service-slow-burn.md"
+      suggested_dashboard: "AI Incident Triage"
+      suggested_next_action: "Find whether latency, availability, dependency, or quality policy is consuming the SLO."
+  - alert: AIServiceLatencyDegraded
+    expr: max by (service, environment, model, workload) (metricchrono_sre_ai_latency_component_seconds{component="end_to_end"} > 1 and metricchrono_sre_ai_slo_burn_rate{window="short"} > 1)
+    for: 5m
+    labels:
+      severity: conditional
+      page: "conditional"
+    annotations:
+      summary: "AI service latency is degraded"
+      description: "End-to-end latency is above the example SLO target and burn is elevated."
+      runbook_url: "runbooks/latency-degraded.md"
+      suggested_dashboard: "AI Incident Triage"
+      suggested_next_action: "Inspect queue, provider, retrieval, tool-call, and streaming latency components."
+  - alert: AIProviderDependencyDegraded
+    expr: max by (service, environment, model, workload, provider) ((metricchrono_sre_ai_dependency_health_score{dependency="model_provider"} < 0.75) or (increase(metricchrono_sre_ai_provider_rate_limits_total[5m]) > 5))
+    for: 5m
+    labels:
+      severity: conditional
+      page: "conditional"
+    annotations:
+      summary: "AI provider or upstream dependency is degraded"
+      description: "Provider health, rate limits, errors, or latency suggest dependency impact. Page only if SLO or incident policy is affected."
+      runbook_url: "runbooks/provider-dependency-degraded.md"
+      suggested_dashboard: "AI Incident Triage"
+      suggested_next_action: "Compare provider latency/errors with service latency/errors and route to the dependency owner if it leads."
+  - alert: AIBehaviorChangedWhileServiceHealthNormal
+    expr: max by (service, environment, model, workload, stream) (metricchrono_sre_ai_behavior_change_score > 50 and metricchrono_sre_ai_slo_burn_rate{window="short"} < 1 and metricchrono_sre_ai_latency_component_seconds{component="end_to_end"} < 1 and metricchrono_sre_ai_low_traffic_flag == 0 and metricchrono_sre_ai_baseline_trust_state_code == 0)
+    for: 10m
+    labels:
+      severity: watch
+      page: "no"
+    annotations:
+      summary: "AI behavior changed while service health is normal"
+      description: "Behavior evidence moved while latency, errors, SLO burn, baseline trust, and traffic volume remain acceptable. This is a watch signal, not a default page."
+      runbook_url: "runbooks/behavior-changed-health-normal.md"
+      suggested_dashboard: "AI Incident Triage"
+      suggested_next_action: "Route affected stream, workload, and model version to the AI/model owner with deploy and component evidence."
+  - alert: AIBehaviorChangeWithQualityDrop
+    expr: max by (service, environment, model, workload, stream) (metricchrono_sre_ai_behavior_change_score > 75 and metricchrono_sre_ai_quality_proxy < 0.85 and metricchrono_sre_ai_low_traffic_flag == 0 and metricchrono_sre_ai_baseline_trust_state_code == 0)
+    for: 5m
+    labels:
+      severity: incident
+      page: "conditional"
+    annotations:
+      summary: "AI behavior changed with quality degradation"
+      description: "Behavior evidence and quality or business proxy are degraded together. Page only where production policy treats this as user impact."
+      runbook_url: "runbooks/behavior-change-quality-drop.md"
+      suggested_dashboard: "AI Incident Triage"
+      suggested_next_action: "Escalate to AI owner with affected stream, quality proxy, and release-correlation evidence."
+  - alert: AIReleaseBehaviorRegression
+    expr: max by (service, environment, model, workload, stream, traffic_role) (metricchrono_sre_ai_canary_behavior_difference_score{traffic_role="canary"} > 50 and metricchrono_sre_ai_low_traffic_flag == 0 and metricchrono_sre_ai_baseline_trust_state_code == 0)
+    for: 10m
+    labels:
+      severity: watch
+      page: "conditional"
+    annotations:
+      summary: "AI release has behavior regression evidence"
+      description: "Canary behavior differs materially from stable or previous version. Do not page solely on behavior; pause or escalate according to release policy."
+      runbook_url: "runbooks/release-behavior-regression.md"
+      suggested_dashboard: "AI Release Guardrail"
+      suggested_next_action: "Compare canary user impact, behavior components, dependency/cost difference, and rollback evidence."
+  - alert: AIBaselineStaleOrLowVolume
+    expr: max by (service, environment, model, workload, stream) ((metricchrono_sre_ai_baseline_trust_state_code > 0) or (metricchrono_sre_ai_low_traffic_flag == 1) or (metricchrono_sre_ai_sample_volume < 100))
+    for: 10m
+    labels:
+      severity: info
+      page: "no"
+    annotations:
+      summary: "AI behavior signal trust is weak"
+      description: "Baseline freshness, source availability, or minimum-volume guard weakens behavior interpretation and should suppress or downgrade behavior alerts."
+      runbook_url: "runbooks/baseline-stale-low-volume.md"
+      suggested_dashboard: "AI Incident Triage"
+      suggested_next_action: "Fix baseline trust or wait for minimum traffic before treating behavior evidence as incident-grade."

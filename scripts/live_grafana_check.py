@@ -74,6 +74,74 @@ def wait_for(url: str, auth: bool = False, timeout: float = 30.0) -> None:
     raise RuntimeError(f"timed out waiting for {url}: {last_error}")
 
 
+def find_grafana_binary() -> str:
+    for name in ("grafana", "grafana-server"):
+        path = shutil.which(name)
+        if path is not None:
+            return path
+    raise RuntimeError("grafana binary not found")
+
+
+def is_grafana_home(path: Path) -> bool:
+    return (path / "public").is_dir() and (path / "conf" / "defaults.ini").is_file()
+
+
+def find_grafana_homepath(grafana_bin: str) -> Path:
+    candidates: list[Path] = []
+    for env_name in ("GRAFANA_HOME", "GF_PATHS_HOME"):
+        value = os.environ.get(env_name)
+        if value:
+            candidates.append(Path(value).expanduser())
+
+    resolved_bin = Path(grafana_bin).resolve()
+    prefix = resolved_bin.parent.parent
+    candidates.extend(
+        [
+            prefix / "share" / "grafana",
+            prefix,
+            Path("/usr/share/grafana"),
+            Path("/usr/local/share/grafana"),
+        ]
+    )
+
+    brew = shutil.which("brew")
+    if brew is not None:
+        try:
+            result = subprocess.run(
+                [brew, "--prefix", "grafana"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+        except Exception:  # noqa: BLE001 - best-effort package discovery only
+            result = None
+        if result is not None and result.returncode == 0:
+            prefix_text = result.stdout.strip()
+            if prefix_text:
+                candidates.append(Path(prefix_text) / "share" / "grafana")
+
+    seen: set[Path] = set()
+    for candidate in candidates:
+        normalized = candidate.expanduser()
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        if is_grafana_home(normalized):
+            return normalized
+    raise RuntimeError(
+        "Grafana homepath not found. Set GRAFANA_HOME or GF_PATHS_HOME to the directory containing Grafana public/ and conf/defaults.ini."
+    )
+
+
+def grafana_server_command(grafana_bin: str, homepath: Path, config: Path) -> list[str]:
+    command = [grafana_bin]
+    if Path(grafana_bin).name != "grafana-server":
+        command.append("server")
+    command.extend(["--homepath", str(homepath), "--config", str(config)])
+    return command
+
+
 def substitute(expr: str) -> str:
     rendered = expr
     for key, value in DEFAULTS.items():
@@ -173,11 +241,10 @@ def start_processes(
     grafana_port: int,
 ) -> tuple[subprocess.Popen[str], subprocess.Popen[str], list[Any]]:
     prometheus = shutil.which("prometheus")
-    grafana = shutil.which("grafana")
+    grafana = find_grafana_binary()
     if prometheus is None:
         raise RuntimeError("prometheus binary not found")
-    if grafana is None:
-        raise RuntimeError("grafana binary not found")
+    grafana_homepath = find_grafana_homepath(grafana)
     prom_log = (tmp / "prometheus.log").open("w", encoding="utf-8")
     grafana_log = (tmp / "grafana.log").open("w", encoding="utf-8")
     prom_proc = subprocess.Popen(
@@ -194,14 +261,7 @@ def start_processes(
         text=True,
     )
     grafana_proc = subprocess.Popen(
-        [
-            grafana,
-            "server",
-            "--homepath",
-            "/opt/homebrew/opt/grafana/share/grafana",
-            "--config",
-            str(tmp / "grafana.ini"),
-        ],
+        grafana_server_command(grafana, grafana_homepath, tmp / "grafana.ini"),
         env={**os.environ, "GF_LOG_LEVEL": "info"},
         stdout=grafana_log,
         stderr=subprocess.STDOUT,

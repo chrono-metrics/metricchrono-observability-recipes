@@ -1,0 +1,10 @@
+apiVersion: 1
+providers:
+  - name: metricchrono-sre-ai-services-recipes
+    orgId: 1
+    folder: MetricChrono SRE AI Services Recipes
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

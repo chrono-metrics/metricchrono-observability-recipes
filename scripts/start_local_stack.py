@@ -11,7 +11,7 @@ import sys
 import time
 from pathlib import Path
 
-from live_grafana_check import http_json, wait_for, write_runtime_files
+from live_grafana_check import find_grafana_binary, find_grafana_homepath, grafana_server_command, http_json, wait_for, write_runtime_files
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,6 +58,8 @@ def main() -> int:
     (RUNTIME / "logs").mkdir(parents=True, exist_ok=True)
     (RUNTIME / "pids").mkdir(parents=True, exist_ok=True)
     write_runtime_files(RUNTIME, PORTS["prometheus"], PORTS["metrics"], PORTS["grafana"])
+    grafana = find_grafana_binary()
+    grafana_homepath = find_grafana_homepath(grafana)
 
     processes = {
         "metrics": start(
@@ -84,14 +86,7 @@ def main() -> int:
         ),
         "grafana": start(
             "grafana",
-            [
-                "grafana",
-                "server",
-                "--homepath",
-                "/opt/homebrew/opt/grafana/share/grafana",
-                "--config",
-                str(RUNTIME / "grafana.ini"),
-            ],
+            grafana_server_command(grafana, grafana_homepath, RUNTIME / "grafana.ini"),
         ),
     }
     for name, proc in processes.items():

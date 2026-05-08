@@ -14,7 +14,7 @@ import time
 from pathlib import Path
 
 from capture_domain_grafana_screenshots import RECIPE_SPECS, copy_dashboards, spec_for, validate_dashboard_data, write_runtime_files
-from live_grafana_check import http_json, wait_for
+from live_grafana_check import find_grafana_binary, find_grafana_homepath, grafana_server_command, http_json, wait_for
 from stop_domain_stack import stop_stack
 
 
@@ -58,11 +58,10 @@ def write_pid(name: str, proc: subprocess.Popen[bytes]) -> None:
 
 def start_processes(ports: dict[str, int], recipe: str) -> dict[str, subprocess.Popen[bytes]]:
     prometheus = shutil.which("prometheus")
-    grafana = shutil.which("grafana")
+    grafana = find_grafana_binary()
     if prometheus is None:
         raise RuntimeError("prometheus binary not found")
-    if grafana is None:
-        raise RuntimeError("grafana binary not found")
+    grafana_homepath = find_grafana_homepath(grafana)
     return {
         "metrics": start(
             "metrics",
@@ -91,14 +90,7 @@ def start_processes(ports: dict[str, int], recipe: str) -> dict[str, subprocess.
         ),
         "grafana": start(
             "grafana",
-            [
-                grafana,
-                "server",
-                "--homepath",
-                "/opt/homebrew/opt/grafana/share/grafana",
-                "--config",
-                str(RUNTIME / "grafana.ini"),
-            ],
+            grafana_server_command(grafana, grafana_homepath, RUNTIME / "grafana.ini"),
         ),
     }
 
